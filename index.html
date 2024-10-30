@@ -1,64 +1,121 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IUS Token Oyunu</title>
-    <style>
-        /* Basit stil ayarları */
-        body { text-align: center; font-family: Arial, sans-serif; }
-        #score { font-size: 24px; }
-        #timer { font-size: 24px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IUS Token</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f8ff;
+      margin: 0;
+    }
+
+    #gameContainer {
+      width: 400px;
+      height: 400px;
+      border: 5px solid #00aaff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    #clickItem {
+      width: 50px;
+      height: 50px;
+      background-color: #ff69b4;
+      position: absolute;
+      border-radius: 50%;
+      cursor: pointer;
+      animation: moveItem 2s infinite;
+    }
+
+    @keyframes moveItem {
+      0% { top: 10px; left: 10px; }
+      25% { top: 10px; left: 320px; }
+      50% { top: 320px; left: 320px; }
+      75% { top: 320px; left: 10px; }
+      100% { top: 10px; left: 10px; }
+    }
+
+    #score {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #00aaff;
+    }
+
+    #timer {
+      font-size: 18px;
+      color: #ff4500;
+    }
+  </style>
 </head>
 <body>
-    <h1>IUS Token Oyunu</h1>
-    <div id="score">Puan: 0</div>
-    <div id="timer">Kalan Süre: 30 saniye</div>
-    <button onclick="handleClick()">Tıkla!</button>
-    <button onclick="startGame()">Oyuna Başla</button>
 
-    <script>
-        let score = 0; // Kullanıcının puanı
-let timer = 30; // Oyun süresi (saniye)
-let isGameActive = false; // Oyunun aktif olup olmadığını kontrol eden değişken
+<div id="gameContainer">
+  <div id="clickItem"></div>
+</div>
 
-// Sayaç güncelleme fonksiyonu
-function updateTimer() {
-    if (isGameActive) {
-        timer--;
-        document.getElementById('timer').innerText = `Kalan Süre: ${timer} saniye`;
-        if (timer <= 0) {
-            endGame();
-        }
+<div id="score">Puan: 0</div>
+<div id="timer">Süre: 30</div>
+
+<script>
+  let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
+  let timeLeft = 30;
+  let gameActive = true;
+
+  document.getElementById("score").innerText = "Puan: " + score;
+
+  const clickItem = document.getElementById("clickItem");
+  clickItem.addEventListener("click", () => {
+    if (gameActive) {
+      score += 10;
+      localStorage.setItem("score", score);
+      document.getElementById("score").innerText = "Puan: " + score;
     }
-}
+  });
 
-// Oyun başladığında çağrılacak fonksiyon
-function startGame() {
-    score = 0; // Puanı sıfırla
-    timer = 30; // Süreyi sıfırla
-    isGameActive = true; // Oyunu başlat
-    document.getElementById('score').innerText = `Puan: ${score}`;
-    document.getElementById('timer').innerText = `Kalan Süre: ${timer} saniye`;
-
-    // Zamanlayıcıyı başlat
-    setInterval(updateTimer, 1000); // Her saniye güncelle
-}
-
-// Oyun bitiş fonksiyonu
-function endGame() {
-    isGameActive = false;
-    alert('Oyun bitti! Puanınız: ' + score);
-}
-
-// Tıklama olayı
-function handleClick() {
-    if (isGameActive) {
-        score++;
-        document.getElementById('score').innerText = `Puan: ${score}`;
+  const timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      document.getElementById("timer").innerText = "Süre: " + timeLeft;
+    } else {
+      gameActive = false;
+      document.getElementById("timer").innerText = "Bekleyin... 1 saat sonra tekrar deneyin.";
+      clearInterval(timerInterval);
+      setTimeout(() => {
+        timeLeft = 30;
+        gameActive = true;
+        document.getElementById("timer").innerText = "Süre: " + timeLeft;
+        startTimer();
+      }, 3600000); // 1 saat bekleme süresi
     }
-}
-    </script>
+  }, 1000);
+
+  function startTimer() {
+    timeLeft = 30;
+    gameActive = true;
+    const newInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        document.getElementById("timer").innerText = "Süre: " + timeLeft;
+      } else {
+        gameActive = false;
+        document.getElementById("timer").innerText = "Bekleyin... 1 saat sonra tekrar deneyin.";
+        clearInterval(newInterval);
+        setTimeout(() => startTimer(), 3600000); // 1 saat bekleme süresi
+      }
+    }, 1000);
+  }
+</script>
+
 </body>
 </html>
