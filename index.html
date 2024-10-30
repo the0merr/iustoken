@@ -130,7 +130,7 @@
     const waitInterval = setInterval(() => {
       if (waitTime > 0) {
         waitTime--;
-        document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
+        document.getElementById("timer").innerText = `Waiting Period: ${formatTime(waitTime)}`;
       } else {
         clearInterval(waitInterval);
         gameActive = true;
