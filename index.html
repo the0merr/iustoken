@@ -1,34 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IUS Token Oyunu</title>
     <style>
-        canvas { border: 1px solid black; }
+        /* Basit stil ayarları */
+        body { text-align: center; font-family: Arial, sans-serif; }
+        #score { font-size: 24px; }
+        #timer { font-size: 24px; }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="400" height="600"></canvas>
+    <h1>IUS Token Oyunu</h1>
+    <div id="score">Puan: 0</div>
+    <div id="timer">Kalan Süre: 30 saniye</div>
+    <button onclick="handleClick()">Tıkla!</button>
+    <button onclick="startGame()">Oyuna Başla</button>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let score = 0;
+        let score = 0; // Kullanıcının puanı
+let timer = 30; // Oyun süresi (saniye)
+let isGameActive = false; // Oyunun aktif olup olmadığını kontrol eden değişken
 
-        function spawnItem() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'red';
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
-            ctx.fillRect(x, y, 20, 20);
+// Sayaç güncelleme fonksiyonu
+function updateTimer() {
+    if (isGameActive) {
+        timer--;
+        document.getElementById('timer').innerText = `Kalan Süre: ${timer} saniye`;
+        if (timer <= 0) {
+            endGame();
         }
+    }
+}
 
-        canvas.addEventListener('click', () => {
-            score += 1;
-            alert(`Puan: ${score}`);
-        });
+// Oyun başladığında çağrılacak fonksiyon
+function startGame() {
+    score = 0; // Puanı sıfırla
+    timer = 30; // Süreyi sıfırla
+    isGameActive = true; // Oyunu başlat
+    document.getElementById('score').innerText = `Puan: ${score}`;
+    document.getElementById('timer').innerText = `Kalan Süre: ${timer} saniye`;
 
-        setInterval(spawnItem, 1000);
+    // Zamanlayıcıyı başlat
+    setInterval(updateTimer, 1000); // Her saniye güncelle
+}
+
+// Oyun bitiş fonksiyonu
+function endGame() {
+    isGameActive = false;
+    alert('Oyun bitti! Puanınız: ' + score);
+}
+
+// Tıklama olayı
+function handleClick() {
+    if (isGameActive) {
+        score++;
+        document.getElementById('score').innerText = `Puan: ${score}`;
+    }
+}
     </script>
 </body>
 </html>
