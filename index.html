@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IUS Token</title>
+  <title>IUS token</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -36,7 +36,7 @@
       border-radius: 50%;
       cursor: pointer;
       animation: blink 1s infinite;
-      transition: all 0.5s ease; /* Hareket ederken daha yavaş geçiş */
+      transition: all 0.5s ease;
     }
 
     @keyframes blink {
@@ -75,7 +75,7 @@
 
   function createClickItems() {
     gameContainer.innerHTML = ""; // Önceki itemları temizle
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) { // 5 adet item oluşturuyoruz
       const clickItem = document.createElement("div");
       clickItem.classList.add("clickItem");
       randomizePosition(clickItem);
@@ -110,6 +110,10 @@
         gameActive = false;
         let waitTime = 3600; // 1 saat bekleme süresi
         document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
+        
+        // Oyun süresi dolunca itemları gizle
+        document.querySelectorAll(".clickItem").forEach(item => item.style.display = "none");
+
         clearInterval(timerInterval);
 
         const waitInterval = setInterval(() => {
@@ -121,6 +125,9 @@
             timeLeft = 30;
             gameActive = true;
             document.getElementById("timer").innerText = "Süre: " + timeLeft;
+            
+            // Bekleme süresi bitince itemları tekrar göster
+            document.querySelectorAll(".clickItem").forEach(item => item.style.display = "block");
             startGameTimer();
           }
         }, 1000);
@@ -139,4 +146,3 @@
 
 </body>
 </html>
-
