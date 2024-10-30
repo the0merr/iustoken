@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IUS token</title>
+  <title>IUS Token</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -66,8 +66,8 @@
 
 <script>
   let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
-  let timeLeft = 30;
   let gameActive = true;
+  let lastWaitEndTime = localStorage.getItem("lastWaitEndTime") ? parseInt(localStorage.getItem("lastWaitEndTime")) : null;
 
   document.getElementById("score").innerText = "Puan: " + score;
 
@@ -83,7 +83,7 @@
 
       clickItem.addEventListener("click", () => {
         if (gameActive) {
-          score += 10;
+          score += 5; // Puan başına kazanç 5 olarak ayarlandı
           localStorage.setItem("score", score);
           document.getElementById("score").innerText = "Puan: " + score;
           randomizePosition(clickItem);
@@ -102,6 +102,13 @@
   createClickItems();
 
   function startGameTimer() {
+    if (lastWaitEndTime && Date.now() < lastWaitEndTime) {
+      const waitTimeLeft = Math.ceil((lastWaitEndTime - Date.now()) / 1000);
+      startWaitTimer(waitTimeLeft);
+      return;
+    }
+
+    let timeLeft = 30;
     const timerInterval = setInterval(() => {
       if (timeLeft > 0) {
         timeLeft--;
@@ -109,28 +116,26 @@
       } else {
         gameActive = false;
         let waitTime = 3600; // 1 saat bekleme süresi
-        document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
-        
-        // Oyun süresi dolunca itemları gizle
-        document.querySelectorAll(".clickItem").forEach(item => item.style.display = "none");
+        lastWaitEndTime = Date.now() + waitTime * 1000;
+        localStorage.setItem("lastWaitEndTime", lastWaitEndTime);
 
         clearInterval(timerInterval);
+        startWaitTimer(waitTime);
+      }
+    }, 1000);
+  }
 
-        const waitInterval = setInterval(() => {
-          waitTime--;
-          document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
-
-          if (waitTime <= 0) {
-            clearInterval(waitInterval);
-            timeLeft = 30;
-            gameActive = true;
-            document.getElementById("timer").innerText = "Süre: " + timeLeft;
-            
-            // Bekleme süresi bitince itemları tekrar göster
-            document.querySelectorAll(".clickItem").forEach(item => item.style.display = "block");
-            startGameTimer();
-          }
-        }, 1000);
+  function startWaitTimer(waitTime) {
+    document.querySelectorAll(".clickItem").forEach(item => item.style.display = "none");
+    const waitInterval = setInterval(() => {
+      if (waitTime > 0) {
+        waitTime--;
+        document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
+      } else {
+        clearInterval(waitInterval);
+        gameActive = true;
+        document.querySelectorAll(".clickItem").forEach(item => item.style.display = "block");
+        startGameTimer();
       }
     }, 1000);
   }
