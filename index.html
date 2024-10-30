@@ -36,6 +36,7 @@
       border-radius: 50%;
       cursor: pointer;
       animation: blink 1s infinite;
+      transition: all 0.5s ease; /* Hareket ederken daha yavaş geçiş */
     }
 
     @keyframes blink {
@@ -79,7 +80,7 @@
       clickItem.classList.add("clickItem");
       randomizePosition(clickItem);
       gameContainer.appendChild(clickItem);
-      
+
       clickItem.addEventListener("click", () => {
         if (gameActive) {
           score += 10;
@@ -114,7 +115,7 @@
         const waitInterval = setInterval(() => {
           waitTime--;
           document.getElementById("timer").innerText = `Bekleme Süresi: ${formatTime(waitTime)}`;
-          
+
           if (waitTime <= 0) {
             clearInterval(waitInterval);
             timeLeft = 30;
