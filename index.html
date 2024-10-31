@@ -7,7 +7,6 @@
 
   <!-- CSS Stilleri -->
   <style>
-    /* Genel Stil */
     body {
       font-family: Arial, sans-serif;
       background-color: #000;
@@ -51,7 +50,6 @@
       display: none;
     }
 
-    /* Mobil cihazlar için ekstra düzenlemeler */
     @media (max-width: 600px) {
       h1 {
         font-size: 1.5em;
@@ -72,7 +70,7 @@
   <header>
     <img src="logo.png" alt="IUS Token Logo" class="logo">
     <h1>IUS Token</h1>
-    <p id="username">Kullanıcı: <span id="telegram-username">kkem34</span></p>
+    <p id="username">Kullanıcı: <span id="telegram-username">Loading...</span></p>
   </header>
 
   <main>
@@ -90,7 +88,12 @@
 
   <!-- JavaScript Kodları -->
   <script>
-    let claimCooldown = 7200; // 2 saat (7200 saniye)
+    // URL'den kullanıcı adını alma
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username') || 'Anonymous'; // Eğer username yoksa 'Anonymous' olarak göster
+    document.getElementById('telegram-username').innerText = username;
+
+    let claimCooldown = 7200;
 
     function claimTokens() {
       alert("Tokens claimed!");
