@@ -1,153 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IUS Token</title>
+  <title>IUS Token Mining</title>
+
+  <!-- CSS Stilleri -->
   <style>
+    /* Genel Stil */
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
-      background-color: #f0f8ff;
+      background-color: #000;
+      color: #fff;
+      text-align: center;
       margin: 0;
+      padding: 0;
     }
 
-    #gameContainer {
-      width: 400px;
-      height: 400px;
-      border: 5px solid #00aaff;
-      display: flex;
-      position: relative;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
+    .logo {
+      width: 80px;
       margin-top: 20px;
     }
 
-    .clickItem {
-      width: 50px;
-      height: 50px;
-      background-color: #ff69b4;
-      position: absolute;
-      border-radius: 50%;
+    h1 {
+      font-size: 1.8em;
+      margin: 10px 0;
+    }
+
+    #balance-section {
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
-      animation: blink 1s infinite;
-      transition: all 0.5s ease;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-
-    #score {
-      font-size: 24px;
-      color: #00aaff;
-      margin-top: 20px;
+      font-size: 1em;
+      margin-top: 10px;
     }
 
     #timer {
-      font-size: 18px;
-      color: #ff4500;
       margin-top: 10px;
+      font-size: 1.1em;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Mobil cihazlar için ekstra düzenlemeler */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+
+      #balance-section {
+        padding: 0 10px;
+      }
     }
   </style>
 </head>
 <body>
+  <header>
+    <img src="logo.png" alt="IUS Token Logo" class="logo">
+    <h1>IUS Token</h1>
+    <p id="username">Kullanıcı: <span id="telegram-username">kkem34</span></p>
+  </header>
 
-<div id="gameContainer"></div>
+  <main>
+    <section id="balance-section">
+      <h2>Balance: <span id="balance">0</span> ₿</h2>
+      <button id="claim-btn" onclick="claimTokens()">Claim Tokens</button>
+      <p id="timer" class="hidden">Next claim in: <span id="countdown">2:00:00</span></p>
+    </section>
 
-<div id="score">Puan: 0</div>
-<div id="timer">Süre: 30</div>
+    <section id="drop-game">
+      <h3>Drop Game</h3>
+      <button onclick="startDropGame()">Play</button>
+    </section>
+  </main>
 
-<script>
-  let score = localStorage.getItem("score") ? parseInt(localStorage.getItem("score")) : 0;
-  let gameActive = true;
-  let lastWaitEndTime = localStorage.getItem("lastWaitEndTime") ? parseInt(localStorage.getItem("lastWaitEndTime")) : null;
+  <!-- JavaScript Kodları -->
+  <script>
+    let claimCooldown = 7200; // 2 saat (7200 saniye)
 
-  document.getElementById("score").innerText = "Puan: " + score;
+    function claimTokens() {
+      alert("Tokens claimed!");
+      startCountdown();
+    }
 
-  const gameContainer = document.getElementById("gameContainer");
+    function startCountdown() {
+      let countdownElement = document.getElementById("countdown");
+      let timerElement = document.getElementById("timer");
+      timerElement.classList.remove("hidden");
 
-  function createClickItems() {
-    gameContainer.innerHTML = ""; // Önceki itemları temizle
-    for (let i = 0; i < 5; i++) { // 5 adet item oluşturuyoruz
-      const clickItem = document.createElement("div");
-      clickItem.classList.add("clickItem");
-      randomizePosition(clickItem);
-      gameContainer.appendChild(clickItem);
-
-      clickItem.addEventListener("click", () => {
-        if (gameActive) {
-          score += 5; // Puan başına kazanç 5 olarak ayarlandı
-          localStorage.setItem("score", score);
-          document.getElementById("score").innerText = "Puan: " + score;
-          randomizePosition(clickItem);
+      let timeLeft = claimCooldown;
+      let countdownInterval = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(countdownInterval);
+          timerElement.classList.add("hidden");
+        } else {
+          timeLeft--;
+          countdownElement.innerText = new Date(timeLeft * 1000).toISOString().substr(11, 8);
         }
-      });
-    }
-  }
-
-  function randomizePosition(element) {
-    const x = Math.floor(Math.random() * (gameContainer.clientWidth - 50));
-    const y = Math.floor(Math.random() * (gameContainer.clientHeight - 50));
-    element.style.left = `${x}px`;
-    element.style.top = `${y}px`;
-  }
-
-  createClickItems();
-
-  function startGameTimer() {
-    if (lastWaitEndTime && Date.now() < lastWaitEndTime) {
-      const waitTimeLeft = Math.ceil((lastWaitEndTime - Date.now()) / 1000);
-      startWaitTimer(waitTimeLeft);
-      return;
+      }, 1000);
     }
 
-    let timeLeft = 30;
-    const timerInterval = setInterval(() => {
-      if (timeLeft > 0) {
-        timeLeft--;
-        document.getElementById("timer").innerText = "Süre: " + timeLeft;
-      } else {
-        gameActive = false;
-        let waitTime = 3600; // 1 saat bekleme süresi
-        lastWaitEndTime = Date.now() + waitTime * 1000;
-        localStorage.setItem("lastWaitEndTime", lastWaitEndTime);
-
-        clearInterval(timerInterval);
-        startWaitTimer(waitTime);
-      }
-    }, 1000);
-  }
-
-  function startWaitTimer(waitTime) {
-    document.querySelectorAll(".clickItem").forEach(item => item.style.display = "none");
-    const waitInterval = setInterval(() => {
-      if (waitTime > 0) {
-        waitTime--;
-        document.getElementById("timer").innerText = `Waiting Period: ${formatTime(waitTime)}`;
-      } else {
-        clearInterval(waitInterval);
-        gameActive = true;
-        document.querySelectorAll(".clickItem").forEach(item => item.style.display = "block");
-        startGameTimer();
-      }
-    }, 1000);
-  }
-
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }
-
-  startGameTimer();
-</script>
-
+    function startDropGame() {
+      alert("Drop Game started!");
+    }
+  </script>
 </body>
 </html>
