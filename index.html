@@ -3,121 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim Tokens</title>
+    <title>IUS Token</title>
     <style>
-        /* Main Styling */
         body {
-            background-color: #121212;
-            color: #f1f1f1;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
             justify-content: center;
+            height: 100vh;
             margin: 0;
+            background-color: #121212;
+            font-family: Arial, sans-serif;
+            color: #f1f1f1;
         }
-
-        /* Username and Token Display */
-        #username, #token-count {
-            font-size: 1.2em;
-            margin: 10px;
-        }
-
-        /* Countdown Circle */
-        #countdown-container {
+        .container {
+            text-align: center;
             position: relative;
-            width: 150px;
-            height: 150px;
+        }
+        #total-tokens {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #username {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        #timer-circle {
+            margin: 30px 0;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            background: conic-gradient(#ff5733 0% 50%, #333 50%);
+            background: conic-gradient(#ff5722 50%, #333 0%);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 20px 0;
-            color: #f1f1f1;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        /* Claim Button */
-        #claim-btn {
-            font-size: 1.1em;
+            font-size: 32px;
             font-weight: bold;
             color: #fff;
-            background-color: #ff5733;
-            border: none;
-            border-radius: 25px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
         }
-
-        #claim-btn:hover {
-            background-color: #ff7961;
+        #claim-button {
+            font-size: 18px;
+            background-color: #ff5722;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        #claim-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <div id="username">Username: <span id="user-name">Unknown</span></div>
-    <div id="token-count">Total Tokens: <span id="tokens">0</span></div>
 
-    <div id="countdown-container">
-        <span id="time-remaining">02:00:00</span>
-    </div>
+<div class="container">
+    <div id="total-tokens">Total Tokens: 0</div>
+    <div id="username">Username: Unknown</div>
+    <div id="timer-circle">02:00:00</div>
+    <button id="claim-button" onclick="claimTokens()">Claim</button>
+</div>
 
-    <button id="claim-btn" onclick="claimTokens()">Claim</button>
+<script>
+    let countdownActive = false;
+    let remainingTime = 2 * 60 * 60; // 2 hours in seconds
+    let username = "Unknown"; // This should be set to Telegram username if available
 
-    <script>
-        // Simulated variables for username and tokens; replace with actual data retrieval in production.
-        const telegramUsername = "unknown"; // This should dynamically retrieve the Telegram username.
-        let tokens = 0;
+    // Fetch the Telegram username and set it
+    function fetchUsername() {
+        // Assume a global `telegramUsername` variable is set by Telegram Bot API.
+        username = telegramUsername || "Unknown";
+        document.getElementById('username').innerText = "Username: " + username;
+    }
 
-        // Display the username
-        document.getElementById("user-name").textContent = telegramUsername !== "unknown" ? telegramUsername : "Unknown";
-
-        // Countdown Variables
-        let countdownDuration = 2 * 60 * 60; // 2 hours in seconds
-        let remainingTime = countdownDuration;
-        const countdownElement = document.getElementById("time-remaining");
-
-        // Initialize the countdown
-        function updateCountdown() {
-            let hours = String(Math.floor(remainingTime / 3600)).padStart(2, '0');
-            let minutes = String(Math.floor((remainingTime % 3600) / 60)).padStart(2, '0');
-            let seconds = String(remainingTime % 60).padStart(2, '0');
-            countdownElement.textContent = `${hours}:${minutes}:${seconds}`;
-        }
-
-        function startCountdown() {
-            const interval = setInterval(() => {
-                if (remainingTime > 0) {
-                    remainingTime--;
-                    updateCountdown();
-                } else {
-                    clearInterval(interval);
-                    remainingTime = countdownDuration; // Reset countdown
-                }
-            }, 1000);
-        }
-
-        // Claim function
-        function claimTokens() {
-            if (remainingTime === countdownDuration || remainingTime <= 0) {
-                tokens += 100;
-                document.getElementById("tokens").textContent = tokens;
-                remainingTime = countdownDuration; // Reset the countdown
-                startCountdown();
+    // Start the countdown
+    function startCountdown() {
+        countdownActive = true;
+        const timerCircle = document.getElementById('timer-circle');
+        let interval = setInterval(() => {
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                countdownActive = false;
+                document.getElementById('claim-button').disabled = false;
             } else {
-                alert("Wait until the countdown resets to claim again.");
-            }
-        }
+                remainingTime--;
+                const hours = String(Math.floor(remainingTime / 3600)).padStart(2, '0');
+                const minutes = String(Math.floor((remainingTime % 3600) / 60)).padStart(2, '0');
+                const seconds = String(remainingTime % 60).padStart(2, '0');
+                timerCircle.innerText = `${hours}:${minutes}:${seconds}`;
 
-        // Initial Countdown and Token Load
-        document.getElementById("tokens").textContent = tokens;
-        updateCountdown();
-        startCountdown();
-    </script>
+                // Update the progress circle
+                const percentage = (remainingTime / (2 * 60 * 60)) * 100;
+                timerCircle.style.background = `conic-gradient(#ff5722 ${percentage}%, #333 ${percentage}%)`;
+            }
+        }, 1000);
+    }
+
+    // Claim tokens
+    function claimTokens() {
+        if (!countdownActive) {
+            document.getElementById('claim-button').disabled = true;
+            let totalTokensElem = document.getElementById('total-tokens');
+            let currentTokens = parseInt(totalTokensElem.innerText.split(": ")[1]);
+            totalTokensElem.innerText = `Total Tokens: ${currentTokens + 100}`;
+            remainingTime = 2 * 60 * 60;
+            startCountdown();
+        }
+    }
+
+    // Run on page load
+    fetchUsername();
+</script>
+
 </body>
 </html>
