@@ -36,7 +36,7 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: conic-gradient(#ff5722 50%, #333 0%);
+            background: conic-gradient(#ff5722 0%, #333 0%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -70,7 +70,7 @@
 
 <script>
     let countdownActive = false;
-    let remainingTime = 2 * 60 * 60; // 2 hours in seconds
+    let remainingTime = localStorage.getItem("remainingTime") ? parseInt(localStorage.getItem("remainingTime")) : 2 * 60 * 60;
     let username = "Unknown"; // This should be set to Telegram username if available
 
     // Fetch the Telegram username and set it
@@ -84,11 +84,13 @@
     function startCountdown() {
         countdownActive = true;
         const timerCircle = document.getElementById('timer-circle');
+        document.getElementById('claim-button').disabled = true;
         let interval = setInterval(() => {
             if (remainingTime <= 0) {
                 clearInterval(interval);
                 countdownActive = false;
                 document.getElementById('claim-button').disabled = false;
+                localStorage.removeItem("remainingTime");
             } else {
                 remainingTime--;
                 const hours = String(Math.floor(remainingTime / 3600)).padStart(2, '0');
@@ -99,6 +101,9 @@
                 // Update the progress circle
                 const percentage = (remainingTime / (2 * 60 * 60)) * 100;
                 timerCircle.style.background = `conic-gradient(#ff5722 ${percentage}%, #333 ${percentage}%)`;
+
+                // Save the remaining time to localStorage
+                localStorage.setItem("remainingTime", remainingTime);
             }
         }, 1000);
     }
@@ -106,17 +111,24 @@
     // Claim tokens
     function claimTokens() {
         if (!countdownActive) {
-            document.getElementById('claim-button').disabled = true;
             let totalTokensElem = document.getElementById('total-tokens');
             let currentTokens = parseInt(totalTokensElem.innerText.split(": ")[1]);
             totalTokensElem.innerText = `Total Tokens: ${currentTokens + 100}`;
-            remainingTime = 2 * 60 * 60;
+            remainingTime = 2 * 60 * 60; // Reset timer to 2 hours
             startCountdown();
         }
     }
 
-    // Run on page load
-    fetchUsername();
+    // Initialize on page load
+    function initialize() {
+        fetchUsername();
+        // If countdown was already active, resume it
+        if (remainingTime < 2 * 60 * 60 && remainingTime > 0) {
+            startCountdown();
+        }
+    }
+
+    initialize();
 </script>
 
 </body>
