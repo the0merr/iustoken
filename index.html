@@ -7,122 +7,110 @@
     <style>
         body {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            background-color: #121212;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1c1c1c;
             color: white;
             font-family: Arial, sans-serif;
-            height: 100vh;
-            margin: 0;
         }
         .container {
             text-align: center;
         }
         .username {
             font-size: 1.5em;
-            margin-bottom: 20px;
+            margin-bottom: 0.5em;
         }
-        .tokens {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.2em;
-            font-weight: bold;
+        .total-tokens {
+            font-size: 1.5em;
+            margin-bottom: 1em;
         }
-        .countdown-circle {
+        .timer {
+            position: relative;
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background-color: #1a1a1a;
-            position: relative;
+            background-color: #ff5722;
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5em;
-            margin-bottom: 20px;
+            margin: 0 auto 1em;
         }
-        .progress-ring {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(#ff5733 50%, transparent 50%);
-        }
-        .claim-btn {
-            background-color: #ff5733;
-            color: white;
-            border: none;
+        .claim-button {
             padding: 10px 20px;
-            font-size: 1em;
+            font-size: 1.2em;
+            color: white;
+            background-color: #ff5722;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        .claim-btn:disabled {
-            background-color: #555;
-            cursor: not-allowed;
+        .claim-button:hover {
+            background-color: #ff784e;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="tokens" id="token-balance">12029 $IUS</div>
-        <div class="username" id="username">Username: Unknown</div>
-        <div class="countdown-circle">
-            <div class="progress-ring" id="progress-ring"></div>
-            <span id="countdown">02:00:00</span>
-        </div>
-        <button class="claim-btn" id="claim-btn" onclick="claimTokens()">Claim</button>
-    </div>
 
-    <script>
-        let countdownInterval;
-        let remainingTime = 7200; // 2 hours in seconds
-        let tokenBalance = 12029;
+<div class="container">
+    <div class="username" id="username">Username: Unknown</div>
+    <div class="total-tokens" id="totalTokens">0 $IUS</div>
+    <div class="timer" id="timer">02:00:00</div>
+    <button class="claim-button" id="claimButton">Claim</button>
+</div>
 
-        function startCountdown() {
-            countdownInterval = setInterval(() => {
-                remainingTime--;
-                updateCountdown();
-                updateProgress();
+<script>
+    // Kullanıcının token miktarı ve kullanıcı adı verileri (örnek olarak burada statik)
+    let username = ""; // Bu değeri Telegram botundan alın
+    let totalTokens = 0; // Başlangıç değeri
+    let countdown = 7200; // 2 saat (saniye cinsinden)
 
-                if (remainingTime <= 0) {
-                    clearInterval(countdownInterval);
-                    document.getElementById("claim-btn").disabled = false;
-                }
-            }, 1000);
-        }
+    // Kullanıcı adı ve token bilgilerini güncelle
+    function updateUserInfo() {
+        document.getElementById('username').textContent = "Username: " + (username || "Unknown");
+        document.getElementById('totalTokens').textContent = totalTokens + " $IUS";
+    }
 
-        function updateCountdown() {
-            const hours = String(Math.floor(remainingTime / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((remainingTime % 3600) / 60)).padStart(2, '0');
-            const seconds = String(remainingTime % 60).padStart(2, '0');
-            document.getElementById("countdown").innerText = `${hours}:${minutes}:${seconds}`;
-        }
+    // Geri sayımı başlat
+    function startCountdown() {
+        let timerElement = document.getElementById("timer");
+        let interval = setInterval(() => {
+            if (countdown <= 0) {
+                clearInterval(interval);
+                timerElement.textContent = "00:00:00";
+            } else {
+                countdown--;
+                let hours = String(Math.floor(countdown / 3600)).padStart(2, '0');
+                let minutes = String(Math.floor((countdown % 3600) / 60)).padStart(2, '0');
+                let seconds = String(countdown % 60).padStart(2, '0');
+                timerElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }, 1000);
+    }
 
-        function updateProgress() {
-            const percentage = ((7200 - remainingTime) / 7200) * 100;
-            document.getElementById("progress-ring").style.background = `conic-gradient(#ff5733 ${percentage}%, transparent ${percentage}%)`;
-        }
+    // Claim butonuna tıklanınca token ekle ve geri sayımı başlat
+    document.getElementById("claimButton").addEventListener("click", () => {
+        totalTokens += 100; // Her claim'de 100 token ekle
+        countdown = 7200; // 2 saatlik geri sayımı sıfırla
+        updateUserInfo();
+        startCountdown();
+    });
 
-        function claimTokens() {
-            tokenBalance += 100;
-            document.getElementById("token-balance").innerText = `${tokenBalance} $IUS`;
-            document.getElementById("claim-btn").disabled = true;
-            remainingTime = 7200;
-            startCountdown();
-        }
+    // İlk yüklemede kullanıcı adı ve token bilgilerini güncelle
+    updateUserInfo();
 
-        // Initial setup
-        updateCountdown();
-        updateProgress();
+    // Telegram’dan kullanıcı adı al (Telegram botunuza bağlı olarak bunu dinamik yapabilirsiniz)
+    function fetchUsername() {
+        // Telegram botunuzdan kullanıcı adını burada alın ve 'username' değişkenine atayın
+        // username = 'telegramdan_gelen_kullanici_adi';
 
-        // Username simulation
-        const username = "omer"; // Bunu Telegram API'den çekeceksiniz
-        document.getElementById("username").innerText = `Username: ${username}`;
-    </script>
+        updateUserInfo();
+    }
+
+    fetchUsername();
+</script>
+
 </body>
 </html>
-
