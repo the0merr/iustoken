@@ -3,119 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IUS Token</title>
+    <title>IUS Token Web App</title>
     <style>
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
             height: 100vh;
             margin: 0;
         }
-        .circle {
-            position: relative;
+        .container {
+            text-align: center;
+        }
+        .username {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+        .tokens {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .countdown-circle {
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background: conic-gradient(#ff4500 50%, #333);
+            background-color: #1a1a1a;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #ffffff;
+            font-size: 1.5em;
+            margin-bottom: 20px;
         }
-        .claim-button {
-            background-color: #ff4500;
+        .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#ff5733 50%, transparent 50%);
+        }
+        .claim-btn {
+            background-color: #ff5733;
             color: white;
-            font-size: 16px;
-            padding: 10px 20px;
-            margin-top: 20px;
             border: none;
+            padding: 10px 20px;
+            font-size: 1em;
             border-radius: 5px;
             cursor: pointer;
         }
-        .claim-button:disabled {
+        .claim-btn:disabled {
             background-color: #555;
             cursor: not-allowed;
-        }
-        .info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .total-tokens {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 18px;
         }
     </style>
 </head>
 <body>
-    <div class="total-tokens">Total Tokens: <span id="totalTokens">0</span></div>
-    <div class="info">
-        <div>Username: <span id="username">Unknown</span></div>
+    <div class="container">
+        <div class="tokens" id="token-balance">12029 $IUS</div>
+        <div class="username" id="username">Username: Unknown</div>
+        <div class="countdown-circle">
+            <div class="progress-ring" id="progress-ring"></div>
+            <span id="countdown">02:00:00</span>
+        </div>
+        <button class="claim-btn" id="claim-btn" onclick="claimTokens()">Claim</button>
     </div>
-    <div class="circle" id="countdown">02:00:00</div>
-    <button class="claim-button" id="claimButton">Claim</button>
 
     <script>
-        let countdownTime = 2 * 60 * 60; // 2 saat
         let countdownInterval;
-        const totalTokensElement = document.getElementById('totalTokens');
-        const countdownElement = document.getElementById('countdown');
-        const claimButton = document.getElementById('claimButton');
-        const usernameElement = document.getElementById('username');
+        let remainingTime = 7200; // 2 hours in seconds
+        let tokenBalance = 12029;
 
-        // Kullanıcı adı ve token bilgilerini backend'den al
-        async function fetchUserData() {
-            const response = await fetch('/api/user-data');
-            const data = await response.json();
-            usernameElement.innerText = data.username || "Unknown";
-            totalTokensElement.innerText = data.totalTokens || 0;
-            if (data.countdown > 0) {
-                startCountdown(data.countdown);
-            }
-        }
-
-        // Claim işlemi
-        async function claimTokens() {
-            const response = await fetch('/api/claim', { method: 'POST' });
-            const data = await response.json();
-            if (data.success) {
-                totalTokensElement.innerText = data.totalTokens;
-                startCountdown(2 * 60 * 60); // 2 saatlik geri sayımı başlat
-            } else {
-                alert("Claim failed.");
-            }
-        }
-
-        // Geri sayımı başlat
-        function startCountdown(seconds) {
-            clearInterval(countdownInterval);
-            countdownTime = seconds;
+        function startCountdown() {
             countdownInterval = setInterval(() => {
-                if (countdownTime <= 0) {
+                remainingTime--;
+                updateCountdown();
+                updateProgress();
+
+                if (remainingTime <= 0) {
                     clearInterval(countdownInterval);
-                    claimButton.disabled = false;
-                    countdownElement.innerText = "02:00:00";
-                } else {
-                    countdownTime--;
-                    const hours = String(Math.floor(countdownTime / 3600)).padStart(2, '0');
-                    const minutes = String(Math.floor((countdownTime % 3600) / 60)).padStart(2, '0');
-                    const seconds = String(countdownTime % 60).padStart(2, '0');
-                    countdownElement.innerText = `${hours}:${minutes}:${seconds}`;
-                    claimButton.disabled = true;
+                    document.getElementById("claim-btn").disabled = false;
                 }
             }, 1000);
         }
 
-        claimButton.addEventListener('click', claimTokens);
-        fetchUserData();
+        function updateCountdown() {
+            const hours = String(Math.floor(remainingTime / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((remainingTime % 3600) / 60)).padStart(2, '0');
+            const seconds = String(remainingTime % 60).padStart(2, '0');
+            document.getElementById("countdown").innerText = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function updateProgress() {
+            const percentage = ((7200 - remainingTime) / 7200) * 100;
+            document.getElementById("progress-ring").style.background = `conic-gradient(#ff5733 ${percentage}%, transparent ${percentage}%)`;
+        }
+
+        function claimTokens() {
+            tokenBalance += 100;
+            document.getElementById("token-balance").innerText = `${tokenBalance} $IUS`;
+            document.getElementById("claim-btn").disabled = true;
+            remainingTime = 7200;
+            startCountdown();
+        }
+
+        // Initial setup
+        updateCountdown();
+        updateProgress();
+
+        // Username simulation
+        const username = "omer"; // Bunu Telegram API'den çekeceksiniz
+        document.getElementById("username").innerText = `Username: ${username}`;
     </script>
 </body>
 </html>
+
