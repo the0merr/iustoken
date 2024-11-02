@@ -3,114 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IUS Token Web App</title>
+    <title>Token Claim App</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #1c1c1c;
+            background-color: black;
             color: white;
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
         }
-        .container {
-            text-align: center;
-        }
-        .username {
+        .username, .total-tokens {
             font-size: 1.5em;
-            margin-bottom: 0.5em;
+            margin: 10px;
         }
-        .total-tokens {
-            font-size: 1.5em;
-            margin-bottom: 1em;
-        }
-        .timer {
-            position: relative;
+        .countdown-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background-color: #ff5722;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 5px solid #fff;
+            position: relative;
+            margin-top: 20px;
+        }
+        .countdown-timer {
             font-size: 1.5em;
-            margin: 0 auto 1em;
+            position: absolute;
+            text-align: center;
         }
         .claim-button {
+            background-color: #1E90FF;
+            color: white;
             padding: 10px 20px;
             font-size: 1.2em;
-            color: white;
-            background-color: #ff5722;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-        }
-        .claim-button:hover {
-            background-color: #ff784e;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
     <div class="username" id="username">Username: Unknown</div>
-    <div class="total-tokens" id="totalTokens">0 $IUS</div>
-    <div class="timer" id="timer">02:00:00</div>
+    <div class="total-tokens" id="totalTokens">Total Tokens: 0 $IUS</div>
+    <div class="countdown-container">
+        <div class="countdown-timer" id="countdown">00:00:00</div>
+    </div>
     <button class="claim-button" id="claimButton">Claim</button>
-</div>
 
-<script>
-    // Kullanıcının token miktarı ve kullanıcı adı verileri (örnek olarak burada statik)
-    let username = ""; // Bu değeri Telegram botundan alın
-    let totalTokens = 0; // Başlangıç değeri
-    let countdown = 7200; // 2 saat (saniye cinsinden)
+    <script>
+        const username = "<!--USERNAME-->";
+        const totalTokens = "<!--TOKENS-->";
+        const countdownTimer = document.getElementById('countdown');
+        const claimButton = document.getElementById('claimButton');
+        
+        document.getElementById('username').textContent = "Username: " + username;
+        document.getElementById('totalTokens').textContent = "Total Tokens: " + totalTokens + " $IUS";
 
-    // Kullanıcı adı ve token bilgilerini güncelle
-    function updateUserInfo() {
-        document.getElementById('username').textContent = "Username: " + (username || "Unknown");
-        document.getElementById('totalTokens').textContent = totalTokens + " $IUS";
-    }
+        let countdown = 7200;  // 2 hours in seconds
+        let interval = null;
 
-    // Geri sayımı başlat
-    function startCountdown() {
-        let timerElement = document.getElementById("timer");
-        let interval = setInterval(() => {
-            if (countdown <= 0) {
-                clearInterval(interval);
-                timerElement.textContent = "00:00:00";
-            } else {
-                countdown--;
-                let hours = String(Math.floor(countdown / 3600)).padStart(2, '0');
-                let minutes = String(Math.floor((countdown % 3600) / 60)).padStart(2, '0');
-                let seconds = String(countdown % 60).padStart(2, '0');
-                timerElement.textContent = `${hours}:${minutes}:${seconds}`;
+        function updateCountdown() {
+            const hours = Math.floor(countdown / 3600).toString().padStart(2, '0');
+            const minutes = Math.floor((countdown % 3600) / 60).toString().padStart(2, '0');
+            const seconds = (countdown % 60).toString().padStart(2, '0');
+            countdownTimer.textContent = `${hours}:${minutes}:${seconds}`;
+            if (countdown > 0) countdown--;
+            else clearInterval(interval);
+        }
+
+        claimButton.addEventListener('click', () => {
+            // Claim token logic
+            if (countdown === 0 || interval === null) {
+                countdown = 7200;  // Reset countdown to 2 hours
+                interval = setInterval(updateCountdown, 1000);
+                // Here you can add code to send claim request to the server
+                alert('Claimed 100 $IUS tokens!');
             }
-        }, 1000);
-    }
+        });
 
-    // Claim butonuna tıklanınca token ekle ve geri sayımı başlat
-    document.getElementById("claimButton").addEventListener("click", () => {
-        totalTokens += 100; // Her claim'de 100 token ekle
-        countdown = 7200; // 2 saatlik geri sayımı sıfırla
-        updateUserInfo();
-        startCountdown();
-    });
-
-    // İlk yüklemede kullanıcı adı ve token bilgilerini güncelle
-    updateUserInfo();
-
-    // Telegram’dan kullanıcı adı al (Telegram botunuza bağlı olarak bunu dinamik yapabilirsiniz)
-    function fetchUsername() {
-        // Telegram botunuzdan kullanıcı adını burada alın ve 'username' değişkenine atayın
-        // username = 'telegramdan_gelen_kullanici_adi';
-
-        updateUserInfo();
-    }
-
-    fetchUsername();
-</script>
-
+        updateCountdown();
+    </script>
 </body>
 </html>
