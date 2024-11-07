@@ -3,90 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Token Claim App</title>
+    <title>Dogo Run</title>
     <style>
         body {
-            background-color: black;
-            color: white;
             font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            overflow: hidden;
             margin: 0;
         }
-        .username, .total-tokens {
-            font-size: 1.5em;
-            margin: 10px;
-        }
-        .countdown-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid #fff;
+        #game {
+            width: 800px;
+            height: 200px;
+            border: 1px solid #ccc;
             position: relative;
-            margin-top: 20px;
+            background-color: #fff;
+            overflow: hidden;
         }
-        .countdown-timer {
-            font-size: 1.5em;
+        .dog {
             position: absolute;
-            text-align: center;
+            bottom: 0;
+            width: 44px;
+            height: 44px;
         }
-        .claim-button {
-            background-color: #1E90FF;
-            color: white;
-            padding: 10px 20px;
-            font-size: 1.2em;
-            border: none;
-            cursor: pointer;
-            margin-top: 20px;
+        /* Köpeği piksel piksel oluşturuyoruz */
+        .dog .pixel {
+            width: 4px;
+            height: 4px;
+            float: left;
         }
+        /* Köpeğin renkleri */
+        .brown { background-color: #8B4513; } /* Köpek tüyleri */
+        .black { background-color: #000000; } /* Burun ve göz */
+        .white { background-color: #FFFFFF; } /* Yüz ve göz çevresi */
+        .pink { background-color: #FFC0CB; } /* Dil */
     </style>
 </head>
 <body>
-    <div class="username" id="username">Username: Unknown</div>
-    <div class="total-tokens" id="totalTokens">Total Tokens: 0 $IUS</div>
-    <div class="countdown-container">
-        <div class="countdown-timer" id="countdown">00:00:00</div>
+
+<div id="game">
+    <div id="dog" class="dog">
+        <!-- Piksel piksel köpek resmi -->
+        <div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel black"></div><div class="pixel black"></div><div class="pixel brown"></div>
+        <!-- Piksel ile devam eden köpek yapısı, boyutlandırma ve renk ayarları-->
+        <!-- Örneği basit tuttuk, tümünü oluşturmak için benzer örüntüde devam edebilirsiniz -->
     </div>
-    <button class="claim-button" id="claimButton">Claim</button>
+</div>
 
-    <script>
-        const username = "<!--USERNAME-->";
-        const totalTokens = "<!--TOKENS-->";
-        const countdownTimer = document.getElementById('countdown');
-        const claimButton = document.getElementById('claimButton');
-        
-        document.getElementById('username').textContent = "Username: " + username;
-        document.getElementById('totalTokens').textContent = "Total Tokens: " + totalTokens + " $IUS";
+<script>
+    const gameArea = document.getElementById("game");
+    const dog = document.getElementById("dog");
+    let dogYPosition = 0;
+    let isJumping = false;
+    let obstacles = [];
+    let score = 0;
 
-        let countdown = 7200;  // 2 hours in seconds
-        let interval = null;
-
-        function updateCountdown() {
-            const hours = Math.floor(countdown / 3600).toString().padStart(2, '0');
-            const minutes = Math.floor((countdown % 3600) / 60).toString().padStart(2, '0');
-            const seconds = (countdown % 60).toString().padStart(2, '0');
-            countdownTimer.textContent = `${hours}:${minutes}:${seconds}`;
-            if (countdown > 0) countdown--;
-            else clearInterval(interval);
+    document.addEventListener("keydown", function(event) {
+        if (event.code === "Space" && !isJumping) {
+            jump();
         }
+    });
 
-        claimButton.addEventListener('click', () => {
-            // Claim token logic
-            if (countdown === 0 || interval === null) {
-                countdown = 7200;  // Reset countdown to 2 hours
-                interval = setInterval(updateCountdown, 1000);
-                // Here you can add code to send claim request to the server
-                alert('Claimed 100 $IUS tokens!');
+    function jump() {
+        isJumping = true;
+        let jumpHeight = 0;
+        let upInterval = setInterval(() => {
+            if (jumpHeight >= 80) {
+                clearInterval(upInterval);
+                let downInterval = setInterval(() => {
+                    if (jumpHeight <= 0) {
+                        clearInterval(downInterval);
+                        isJumping = false;
+                    }
+                    jumpHeight -= 4;
+                    dog.style.bottom = jumpHeight + "px";
+                }, 20);
             }
-        });
+            jumpHeight += 4;
+            dog.style.bottom = jumpHeight + "px";
+        }, 20);
+    }
 
-        updateCountdown();
-    </script>
+    function spawnObstacle() {
+        let obstacle = document.createElement("div");
+        obstacle.classList.add("obstacle");
+        obstacle.style.left = "800px";
+        gameArea.appendChild(obstacle);
+        obstacles.push(obstacle);
+
+        let obstacleInterval = setInterval(() => {
+            let obstaclePosition = parseInt(obstacle.style.left);
+            if (obstaclePosition < -20) {
+                obstacle.remove();
+                obstacles.shift();
+                score++;
+            } else {
+                obstacle.style.left = obstaclePosition - 5 + "px";
+            }
+
+            if (obstaclePosition < 44 && obstaclePosition > 0 && dogYPosition < 40) {
+                alert("Game Over! Your score: " + score);
+                clearInterval(obstacleInterval);
+                resetGame();
+            }
+        }, 20);
+    }
+
+    function resetGame() {
+        obstacles.forEach(obstacle => obstacle.remove());
+        obstacles = [];
+        score = 0;
+        dog.style.bottom = "0px";
+        setTimeout(() => spawnObstacle(), 1000);
+    }
+
+    setInterval(() => spawnObstacle(), 2000);
+</script>
+
 </body>
 </html>
