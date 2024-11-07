@@ -3,121 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dogo Run</title>
+    <title>Dino Run</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
+            background-color: #f4f4f4;
             overflow: hidden;
         }
+
         #game {
-            width: 90vw;
-            height: 40vh;
-            max-width: 600px;
-            max-height: 200px;
-            border: 1px solid #ccc;
             position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 200px;
+            border: 1px solid #ccc;
             background-color: #fff;
             overflow: hidden;
         }
-        .dog {
+
+        #dino {
             position: absolute;
             bottom: 0;
             left: 50px;
-            display: grid;
-            grid-template-columns: repeat(11, 5px);
-            grid-template-rows: repeat(11, 5px);
-            transform: scale(1.5);
+            width: 40px;
+            height: 40px;
+            background-color: #4CAF50;
         }
-        .pixel {
-            width: 5px;
-            height: 5px;
-        }
-        .brown { background-color: #8B4513; }
-        .black { background-color: #000000; }
-        .white { background-color: #FFFFFF; }
-        .pink { background-color: #FFC0CB; }
 
-        /* Engel stilleri */
         .obstacle {
             position: absolute;
             bottom: 0;
             width: 20px;
-            height: 20px;
-            background-color: #444;
+            height: 40px;
+            background-color: #333;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
 
 <div id="game">
-    <div id="dog" class="dog">
-        <!-- Piksel köpek resmi -->
-        <div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div>
-        <div class="pixel brown"></div><div class="pixel white"></div><div class="pixel white"></div><div class="pixel brown"></div><div class="pixel black"></div><div class="pixel black"></div><div class="pixel brown"></div><div class="pixel white"></div><div class="pixel white"></div><div class="pixel brown"></div>
-        <div class="pixel brown"></div><div class="pixel white"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel pink"></div><div class="pixel pink"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel white"></div><div class="pixel brown"></div>
-        <div class="pixel brown"></div><div class="pixel white"></div><div class="pixel white"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel white"></div><div class="pixel white"></div><div class="pixel brown"></div>
-        <div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div><div class="pixel brown"></div>
-        <!-- Köpek piksel yapısını devam ettiriyoruz -->
-    </div>
+    <div id="score">Score: 0</div>
+    <div id="dino"></div>
 </div>
 
 <script>
     const gameArea = document.getElementById("game");
-    const dog = document.getElementById("dog");
-    let isJumping = false;
-    let obstacles = [];
-    let score = 0;
+    const dino = document.getElementById("dino");
+    const scoreDisplay = document.getElementById("score");
 
-    document.addEventListener("keydown", function(event) {
-        if (event.code === "Space" && !isJumping) {
-            jump();
-        }
-    });
+    let isJumping = false;
+    let gravity = 0.9;
+    let score = 0;
+    let obstacles = [];
 
     function jump() {
+        if (isJumping) return;
         isJumping = true;
         let jumpHeight = 0;
         let upInterval = setInterval(() => {
-            if (jumpHeight >= 60) {
+            if (jumpHeight >= 150) {
                 clearInterval(upInterval);
                 let downInterval = setInterval(() => {
                     if (jumpHeight <= 0) {
                         clearInterval(downInterval);
                         isJumping = false;
                     }
-                    jumpHeight -= 4;
-                    dog.style.bottom = jumpHeight + "px";
+                    jumpHeight -= 5;
+                    dino.style.bottom = jumpHeight + "px";
                 }, 20);
             }
-            jumpHeight += 4;
-            dog.style.bottom = jumpHeight + "px";
+            jumpHeight += 5;
+            dino.style.bottom = jumpHeight + "px";
         }, 20);
     }
 
     function spawnObstacle() {
         let obstacle = document.createElement("div");
         obstacle.classList.add("obstacle");
-        obstacle.style.left = "90vw";
+        obstacle.style.left = "100%";
         gameArea.appendChild(obstacle);
         obstacles.push(obstacle);
 
         let obstacleInterval = setInterval(() => {
-            let obstaclePosition = parseInt(obstacle.style.left);
-            if (obstaclePosition < -20) {
+            let obstaclePosition = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+            if (obstaclePosition < 0) {
                 obstacle.remove();
                 obstacles.shift();
                 score++;
+                scoreDisplay.textContent = "Score: " + score;
             } else {
-                obstacle.style.left = obstaclePosition - 5 + "px";
+                obstacle.style.left = obstaclePosition - 10 + "px";
             }
 
-            if (obstaclePosition < 70 && obstaclePosition > 50 && !isJumping) {
+            // Collision detection
+            let dinoPosition = parseInt(window.getComputedStyle(dino).getPropertyValue("bottom"));
+            if (obstaclePosition > 40 && obstaclePosition < 90 && dinoPosition < 40) {
                 alert("Game Over! Your score: " + score);
                 clearInterval(obstacleInterval);
                 resetGame();
@@ -129,11 +126,16 @@
         obstacles.forEach(obstacle => obstacle.remove());
         obstacles = [];
         score = 0;
-        dog.style.bottom = "0px";
-        setTimeout(() => spawnObstacle(), 1000);
+        scoreDisplay.textContent = "Score: " + score;
+        dino.style.bottom = "0px";
+        setTimeout(spawnObstacle, 1000);
     }
 
-    setInterval(() => spawnObstacle(), 2000);
+    document.addEventListener("keydown", (event) => {
+        if (event.code === "Space") jump();
+    });
+
+    setInterval(spawnObstacle, 2000);
 </script>
 
 </body>
