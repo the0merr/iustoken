@@ -1,183 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TapSwap</title>
-  <style>
-    /* Embedded CSS */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: #ffffff;
-      background: linear-gradient(to bottom, #2a0f47, #1b0333);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+const gameContainer = document.getElementById('game-container');
+const startButton = document.getElementById('start-button');
+const timerDisplay = document.getElementById('timer');
+const scoreDisplay = document.getElementById('score');
+let score = 0;
+let gameTime = 30;
+let gameInterval;
+let bubbleInterval;
+
+function startGame() {
+    score = 0;
+    gameTime = 30;
+    startButton.style.display = 'none';
+    scoreDisplay.textContent = `Score: ${score}`;
+    timerDisplay.textContent = `Time: ${gameTime}`;
+
+    // Zamanlayıcı başlat
+    gameInterval = setInterval(updateTimer, 1000);
+    bubbleInterval = setInterval(createBubble, 1000);
+}
+
+function updateTimer() {
+    gameTime--;
+    timerDisplay.textContent = `Time: ${gameTime}`;
+    if (gameTime <= 0) {
+        endGame();
     }
+}
 
-    .container {
-      width: 90%;
-      max-width: 400px;
-    }
+function createBubble() {
+    const bubble = document.createElement('div');
+    bubble.classList.add('bubble');
+    // Rastgele konum ayarlama
+    const x = Math.random() * (window.innerWidth - 50);
+    const y = Math.random() * (window.innerHeight - 50);
+    bubble.style.left = `${x}px`;
+    bubble.style.top = `${y}px`;
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-    }
-
-    .menu-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .main-content {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .balance-section {
-      margin-bottom: 20px;
-    }
-
-    .balance-section p {
-      font-size: 1rem;
-    }
-
-    .balance-section h2 {
-      font-size: 2rem;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .coin-icon {
-      margin-right: 10px;
-    }
-
-    .stats-section {
-      margin-top: 20px;
-    }
-
-    .stat-item {
-      margin-bottom: 10px;
-    }
-
-    .stat-item p {
-      font-size: 0.9rem;
-    }
-
-    .stat-item h3 {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-
-    .footer-nav {
-      display: flex;
-      justify-content: space-around;
-      padding: 15px 0;
-      margin-top: 20px;
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: none;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .nav-item.active {
-      color: #ffa726;
-    }
-
-    .nav-item p {
-      font-size: 0.8rem;
-      margin-top: 5px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Header Section -->
-    <header class="header">
-      <h1>TapSwap</h1>
-      <button class="menu-btn">☰</button>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="balance-section">
-        <p>Total Share Balance:</p>
-        <h2><span class="coin-icon">🪙</span> 327.626 T</h2>
-      </div>
-      <div class="stats-section">
-        <div class="stat-item">
-          <p>Total Touches:</p>
-          <h3>2 947 229 486 209</h3>
-        </div>
-        <div class="stat-item">
-          <p>Total Players:</p>
-          <h3>61 886 680</h3>
-        </div>
-        <div class="stat-item">
-          <p>Daily Users:</p>
-          <h3>18 902 239</h3>
-        </div>
-        <div class="stat-item">
-          <p>Online Players:</p>
-          <h3>399 948</h3>
-        </div>
-      </div>
-    </main>
-
-    <!-- Footer Navigation -->
-    <footer class="footer-nav">
-      <button class="nav-item">
-        <span>🐕</span>
-        <p>Ref</p>
-      </button>
-      <button class="nav-item">
-        <span>✔️</span>
-        <p>Task</p>
-      </button>
-      <button class="nav-item">
-        <span>🪙</span>
-        <p>Tap</p>
-      </button>
-      <button class="nav-item">
-        <span>🔥</span>
-        <p>Boost</p>
-      </button>
-      <button class="nav-item active">
-        <span>📊</span>
-        <p>Stats</p>
-      </button>
-    </footer>
-  </div>
-
-  <script>
-    // Embedded JavaScript
-    document.querySelectorAll('.nav-item').forEach((item) => {
-      item.addEventListener('click', () => {
-        document.querySelector('.nav-item.active').classList.remove('active');
-        item.classList.add('active');
-      });
+    // Balona tıklanınca puan arttır ve balonu sil
+    bubble.addEventListener('click', () => {
+        score++;
+        scoreDisplay.textContent = `Score: ${score}`;
+        bubble.remove();
     });
-  </script>
-</body>
-</html>
+
+    gameContainer.appendChild(bubble);
+
+    // Balonun otomatik olarak kaybolması (1.5 saniye sonra)
+    setTimeout(() => bubble.remove(), 1500);
+}
+
+function endGame() {
+    clearInterval(gameInterval);
+    clearInterval(bubbleInterval);
+    alert(`Oyun Bitti! Toplam Puanınız: ${score}`);
+    startButton.style.display = 'block';
+}
+
+// Oyunu başlat
+startButton.addEventListener('click', startGame);
