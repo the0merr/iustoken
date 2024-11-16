@@ -16,24 +16,15 @@
             background-color: #121212; /* Siyah koyu tema */
             color: white;
         }
-        h1, h2 {
-            font-family: 'Poppins', sans-serif; /* Cool ve profesyonel yazı fontları */
-            margin: 0;
-        }
         .username {
             font-size: 1.5rem;
             margin-bottom: 20px;
+            font-family: 'Poppins', sans-serif; /* Cool ve profesyonel yazı fontları */
         }
-        .circle {
+        canvas {
             width: 200px;
             height: 200px;
-            border: 10px solid white; /* Kalın beyaz çember */
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            display: block;
         }
         .claim-btn {
             margin-top: 20px;
@@ -54,6 +45,7 @@
             right: 10px;
             font-size: 1rem;
             font-weight: bold;
+            font-family: 'Poppins', sans-serif;
         }
     </style>
 </head>
@@ -62,7 +54,7 @@
     <div class="username" id="username">Loading...</div>
 
     <!-- Ortadaki çember -->
-    <div class="circle" id="timer">2:00:00</div>
+    <canvas id="circleCanvas" width="200" height="200"></canvas>
 
     <!-- Claim Butonu -->
     <button class="claim-btn" id="claim-btn">Claim</button>
@@ -74,10 +66,12 @@
         // Kullanıcı bilgileri ve token state'lerini yönetmek için
         const telegram = window.Telegram.WebApp;
         const username = document.getElementById('username');
-        const timerDisplay = document.getElementById('timer');
         const claimButton = document.getElementById('claim-btn');
         const tokensDisplay = document.getElementById('tokens');
+        const canvas = document.getElementById('circleCanvas');
+        const ctx = canvas.getContext('2d');
 
+        // Varsayılan değerler
         let countdownTime = 7200; // 2 saat (saniye)
         let totalTokens = 0;
         let timer;
@@ -92,15 +86,38 @@
             timer = setInterval(() => {
                 if (countdownTime > 0) {
                     countdownTime--;
-                    const hours = Math.floor(countdownTime / 3600);
-                    const minutes = Math.floor((countdownTime % 3600) / 60);
-                    const seconds = countdownTime % 60;
-                    timerDisplay.innerText = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    updateCircle();
+                    updateTimerText();
                 } else {
                     clearInterval(timer);
-                    timerDisplay.innerText = "Claim Now!";
                 }
             }, 1000);
+        }
+
+        // Çemberi güncelleme (Canvas)
+        function updateCircle() {
+            const totalTime = 7200; // Toplam 2 saat
+            const angle = (countdownTime / totalTime) * Math.PI * 2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.arc(100, 100, 90, -Math.PI / 2, -Math.PI / 2 + angle, false); // Saat yönünün tersine
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = 'white';
+            ctx.stroke();
+        }
+
+        // Geri sayımı güncelleme (Text)
+        function updateTimerText() {
+            const hours = Math.floor(countdownTime / 3600);
+            const minutes = Math.floor((countdownTime % 3600) / 60);
+            const seconds = countdownTime % 60;
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.clearRect(80, 80, 40, 40); // Çemberin içini temizle
+            ctx.fillText(`${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`, 100, 100);
         }
 
         // Claim butonuna tıklama
@@ -110,35 +127,13 @@
                 tokensDisplay.innerText = `Total: ${totalTokens} IUSxp`;
                 countdownTime = 7200; // 2 saatlik geri sayımı başlat
                 startCountdown();
-
-                // Sunucuya kullanıcı verisini gönder
-                fetch('/api/claim', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        userId: telegram.initDataUnsafe?.user?.id,
-                        tokens: totalTokens,
-                        countdownTime: countdownTime,
-                    }),
-                });
             }
         });
 
-        // Kullanıcı giriş yaptığında geri sayımı başlat
-        async function initializeUser() {
-            const response = await fetch(`/api/user/${telegram.initDataUnsafe?.user?.id}`);
-            const data = await response.json();
-            if (data) {
-                totalTokens = data.tokens || 0;
-                countdownTime = data.countdownTime || 7200;
-                tokensDisplay.innerText = `Total: ${totalTokens} IUSxp`;
-                startCountdown();
-            }
-        }
-
-        initializeUser();
+        // Başlangıç
+        updateCircle();
+        updateTimerText();
+        startCountdown();
     </script>
 </body>
 </html>
