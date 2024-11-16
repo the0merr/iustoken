@@ -1,145 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #121212; /* Siyah koyu tema */
-            color: white;
-        }
-        .username {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            font-family: 'Poppins', sans-serif; /* Cool ve profesyonel yazı fontları */
-        }
-        canvas {
-            display: block;
-        }
-        .claim-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: white;
-            color: #121212;
-            border: none;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .claim-btn:hover {
-            background-color: #e0e0e0;
-        }
-        .tokens {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            font-family: 'Poppins', sans-serif;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TapSwap</title>
+  <style>
+    /* Embedded CSS */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: #ffffff;
+      background: linear-gradient(to bottom, #2a0f47, #1b0333);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .main-content {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .balance-section {
+      margin-bottom: 20px;
+    }
+
+    .balance-section p {
+      font-size: 1rem;
+    }
+
+    .balance-section h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .coin-icon {
+      margin-right: 10px;
+    }
+
+    .stats-section {
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      margin-bottom: 10px;
+    }
+
+    .stat-item p {
+      font-size: 0.9rem;
+    }
+
+    .stat-item h3 {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 15px 0;
+      margin-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .nav-item.active {
+      color: #ffa726;
+    }
+
+    .nav-item p {
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Kullanıcı adı -->
-    <div class="username" id="username">Loading...</div>
+  <div class="container">
+    <!-- Header Section -->
+    <header class="header">
+      <h1>TapSwap</h1>
+      <button class="menu-btn">☰</button>
+    </header>
 
-    <!-- Ortadaki çember -->
-    <canvas id="circleCanvas" width="200" height="200"></canvas>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="balance-section">
+        <p>Total Share Balance:</p>
+        <h2><span class="coin-icon">🪙</span> 327.626 T</h2>
+      </div>
+      <div class="stats-section">
+        <div class="stat-item">
+          <p>Total Touches:</p>
+          <h3>2 947 229 486 209</h3>
+        </div>
+        <div class="stat-item">
+          <p>Total Players:</p>
+          <h3>61 886 680</h3>
+        </div>
+        <div class="stat-item">
+          <p>Daily Users:</p>
+          <h3>18 902 239</h3>
+        </div>
+        <div class="stat-item">
+          <p>Online Players:</p>
+          <h3>399 948</h3>
+        </div>
+      </div>
+    </main>
 
-    <!-- Claim Butonu -->
-    <button class="claim-btn" id="claim-btn">Claim</button>
+    <!-- Footer Navigation -->
+    <footer class="footer-nav">
+      <button class="nav-item">
+        <span>🐕</span>
+        <p>Ref</p>
+      </button>
+      <button class="nav-item">
+        <span>✔️</span>
+        <p>Task</p>
+      </button>
+      <button class="nav-item">
+        <span>🪙</span>
+        <p>Tap</p>
+      </button>
+      <button class="nav-item">
+        <span>🔥</span>
+        <p>Boost</p>
+      </button>
+      <button class="nav-item active">
+        <span>📊</span>
+        <p>Stats</p>
+      </button>
+    </footer>
+  </div>
 
-    <!-- Sağ üst köşe: Toplam Token -->
-    <div class="tokens" id="tokens">Total: 0 IUSxp</div>
-
-    <script>
-        // Kullanıcı bilgileri ve token state'lerini yönetmek için
-        const telegram = window.Telegram.WebApp;
-        const username = document.getElementById('username');
-        const claimButton = document.getElementById('claim-btn');
-        const tokensDisplay = document.getElementById('tokens');
-        const canvas = document.getElementById('circleCanvas');
-        const ctx = canvas.getContext('2d');
-
-        // Varsayılan değerler
-        let countdownTime = 7200; // 2 saat (saniye)
-        let totalTokens = 0;
-        let timer;
-
-        // Telegram kullanıcı adını al ve göster
-        telegram.ready();
-        username.innerText = telegram.initDataUnsafe?.user?.first_name || "User";
-
-        // Çemberi güncelleme (Canvas)
-        function drawCircle(remainingTime) {
-            const totalTime = 7200; // Toplam 2 saat
-            const percentage = remainingTime / totalTime; // Geri sayım yüzdesi
-            const startAngle = -Math.PI / 2; // Saat 12 yönü
-            const endAngle = startAngle + (Math.PI * 2 * percentage); // Saat yönüne ters azalma
-
-            // Canvas temizle
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Dış çemberi çiz
-            ctx.beginPath();
-            ctx.arc(100, 100, 90, 0, Math.PI * 2, false); // Tam çember
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = '#333'; // Arka plan çember rengi
-            ctx.stroke();
-
-            // Geri sayımı gösteren çemberi çiz
-            ctx.beginPath();
-            ctx.arc(100, 100, 90, startAngle, endAngle, false);
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = 'white'; // Aktif çember rengi
-            ctx.stroke();
-
-            // Geri sayım yazısını ortada göster
-            const hours = Math.floor(remainingTime / 3600);
-            const minutes = Math.floor((remainingTime % 3600) / 60);
-            const seconds = remainingTime % 60;
-
-            ctx.font = "20px Arial";
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText(`${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`, 100, 100);
-        }
-
-        // Geri sayım işlevi
-        function startCountdown() {
-            if (timer) clearInterval(timer);
-            timer = setInterval(() => {
-                if (countdownTime > 0) {
-                    countdownTime--;
-                    drawCircle(countdownTime);
-                } else {
-                    clearInterval(timer);
-                }
-            }, 1000);
-        }
-
-        // Claim butonuna tıklama
-        claimButton.addEventListener('click', () => {
-            if (countdownTime === 0) {
-                totalTokens += 100; // Kullanıcıya 100 token ekle
-                tokensDisplay.innerText = `Total: ${totalTokens} IUSxp`;
-                countdownTime = 7200; // 2 saatlik geri sayımı başlat
-                startCountdown();
-            }
-        });
-
-        // Başlangıç
-        drawCircle(countdownTime);
-        startCountdown();
-    </script>
+  <script>
+    // Embedded JavaScript
+    document.querySelectorAll('.nav-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        document.querySelector('.nav-item.active').classList.remove('active');
+        item.classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
