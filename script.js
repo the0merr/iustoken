@@ -100,11 +100,11 @@ function endGame() {
 function startCooldown(remainingTime) {
     isCooldownActive = true;
     startButton.style.display = 'none';
-    timerDisplay.textContent = `Cooldown: ${remainingTime} saniye kaldı`;
+    timerDisplay.textContent = `Cooldown: ${remainingTime} remaining time`;
 
     const cooldownInterval = setInterval(() => {
         remainingTime--;
-        timerDisplay.textContent = `Cooldown: ${remainingTime} saniye kaldı`;
+        timerDisplay.textContent = `Cooldown: ${remainingTime} remaining time`;
 
         if (remainingTime <= 0) {
             clearInterval(cooldownInterval);
