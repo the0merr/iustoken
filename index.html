@@ -1,60 +1,17 @@
-const gameContainer = document.getElementById('game-container');
-const startButton = document.getElementById('start-button');
-const timerDisplay = document.getElementById('timer');
-const scoreDisplay = document.getElementById('score');
-let score = 0;
-let gameTime = 30;
-let gameInterval;
-let bubbleInterval;
-
-function startGame() {
-    score = 0;
-    gameTime = 30;
-    startButton.style.display = 'none';
-    scoreDisplay.textContent = `Score: ${score}`;
-    timerDisplay.textContent = `Time: ${gameTime}`;
-
-    // Zamanlayıcı başlat
-    gameInterval = setInterval(updateTimer, 1000);
-    bubbleInterval = setInterval(createBubble, 1000);
-}
-
-function updateTimer() {
-    gameTime--;
-    timerDisplay.textContent = `Time: ${gameTime}`;
-    if (gameTime <= 0) {
-        endGame();
-    }
-}
-
-function createBubble() {
-    const bubble = document.createElement('div');
-    bubble.classList.add('bubble');
-    // Rastgele konum ayarlama
-    const x = Math.random() * (window.innerWidth - 50);
-    const y = Math.random() * (window.innerHeight - 50);
-    bubble.style.left = `${x}px`;
-    bubble.style.top = `${y}px`;
-
-    // Balona tıklanınca puan arttır ve balonu sil
-    bubble.addEventListener('click', () => {
-        score++;
-        scoreDisplay.textContent = `Score: ${score}`;
-        bubble.remove();
-    });
-
-    gameContainer.appendChild(bubble);
-
-    // Balonun otomatik olarak kaybolması (1.5 saniye sonra)
-    setTimeout(() => bubble.remove(), 1500);
-}
-
-function endGame() {
-    clearInterval(gameInterval);
-    clearInterval(bubbleInterval);
-    alert(`Oyun Bitti! Toplam Puanınız: ${score}`);
-    startButton.style.display = 'block';
-}
-
-// Oyunu başlat
-startButton.addEventListener('click', startGame);
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Balon Patlatma Oyunu</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <button id="start-button">Start Game</button>
+        <div id="timer">Time: 30</div>
+        <div id="score">Score: 0</div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
