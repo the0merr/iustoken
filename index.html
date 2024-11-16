@@ -22,8 +22,6 @@
             font-family: 'Poppins', sans-serif; /* Cool ve profesyonel yazı fontları */
         }
         canvas {
-            width: 200px;
-            height: 200px;
             display: block;
         }
         .claim-btn {
@@ -80,44 +78,53 @@
         telegram.ready();
         username.innerText = telegram.initDataUnsafe?.user?.first_name || "User";
 
+        // Çemberi güncelleme (Canvas)
+        function drawCircle(remainingTime) {
+            const totalTime = 7200; // Toplam 2 saat
+            const percentage = remainingTime / totalTime; // Geri sayım yüzdesi
+            const startAngle = -Math.PI / 2; // Saat 12 yönü
+            const endAngle = startAngle + (Math.PI * 2 * percentage); // Saat yönüne ters azalma
+
+            // Canvas temizle
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Dış çemberi çiz
+            ctx.beginPath();
+            ctx.arc(100, 100, 90, 0, Math.PI * 2, false); // Tam çember
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = '#333'; // Arka plan çember rengi
+            ctx.stroke();
+
+            // Geri sayımı gösteren çemberi çiz
+            ctx.beginPath();
+            ctx.arc(100, 100, 90, startAngle, endAngle, false);
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = 'white'; // Aktif çember rengi
+            ctx.stroke();
+
+            // Geri sayım yazısını ortada göster
+            const hours = Math.floor(remainingTime / 3600);
+            const minutes = Math.floor((remainingTime % 3600) / 60);
+            const seconds = remainingTime % 60;
+
+            ctx.font = "20px Arial";
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`, 100, 100);
+        }
+
         // Geri sayım işlevi
         function startCountdown() {
             if (timer) clearInterval(timer);
             timer = setInterval(() => {
                 if (countdownTime > 0) {
                     countdownTime--;
-                    updateCircle();
-                    updateTimerText();
+                    drawCircle(countdownTime);
                 } else {
                     clearInterval(timer);
                 }
             }, 1000);
-        }
-
-        // Çemberi güncelleme (Canvas)
-        function updateCircle() {
-            const totalTime = 7200; // Toplam 2 saat
-            const angle = (countdownTime / totalTime) * Math.PI * 2;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.beginPath();
-            ctx.arc(100, 100, 90, -Math.PI / 2, -Math.PI / 2 + angle, false); // Saat yönünün tersine
-            ctx.lineWidth = 10;
-            ctx.strokeStyle = 'white';
-            ctx.stroke();
-        }
-
-        // Geri sayımı güncelleme (Text)
-        function updateTimerText() {
-            const hours = Math.floor(countdownTime / 3600);
-            const minutes = Math.floor((countdownTime % 3600) / 60);
-            const seconds = countdownTime % 60;
-            ctx.font = "20px Arial";
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.clearRect(80, 80, 40, 40); // Çemberin içini temizle
-            ctx.fillText(`${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`, 100, 100);
         }
 
         // Claim butonuna tıklama
@@ -131,8 +138,7 @@
         });
 
         // Başlangıç
-        updateCircle();
-        updateTimerText();
+        drawCircle(countdownTime);
         startCountdown();
     </script>
 </body>
