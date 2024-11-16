@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #000000 50%, #ffffff 50%);
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-button {
+    padding: 20px 40px;
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 10px;
+}
+
+.bubble {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: grey;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#timer, #score {
+    position: absolute;
+    top: 20px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+#score {
+    top: 60px;
+}
