@@ -3,130 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flappy Bird Clone</title>
+    <title>Telegram Web App</title>
     <style>
         body {
             margin: 0;
-            overflow: hidden;
-            background-color: #4CAF50; /* Sade yeşil arka plan */
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212; /* Siyah koyu tema */
+            color: white;
         }
-        canvas {
-            display: block;
+        h1, h2 {
+            font-family: 'Poppins', sans-serif; /* Cool ve profesyonel yazı fontları */
+            margin: 0;
+        }
+        .username {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .circle {
+            width: 200px;
+            height: 200px;
+            border: 10px solid white; /* Kalın beyaz çember */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .claim-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: white;
+            color: #121212;
+            border: none;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .claim-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .tokens {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1rem;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-<canvas id="gameCanvas"></canvas>
+    <!-- Kullanıcı adı -->
+    <div class="username" id="username">Loading...</div>
 
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    <!-- Ortadaki çember -->
+    <div class="circle" id="timer">2:00:00</div>
 
-    canvas.width = 320;
-    canvas.height = 480;
+    <!-- Claim Butonu -->
+    <button class="claim-btn" id="claim-btn">Claim</button>
 
-    // Resimleri yükle
-    const birdImg = new Image();
-    birdImg.src = 'bird.png'; // Kuş yerine geçecek görsel
+    <!-- Sağ üst köşe: Toplam Token -->
+    <div class="tokens" id="tokens">Total: 0 IUSxp</div>
 
-    const treeImg = new Image();
-    treeImg.src = 'https://cdn-icons-png.flaticon.com/512/346/346160.png'; // Ağaç görseli (online)
+    <script>
+        // Kullanıcı bilgileri ve token state'lerini yönetmek için
+        const telegram = window.Telegram.WebApp;
+        const username = document.getElementById('username');
+        const timerDisplay = document.getElementById('timer');
+        const claimButton = document.getElementById('claim-btn');
+        const tokensDisplay = document.getElementById('tokens');
 
-    const bird = { x: 50, y: 150, width: 30, height: 30, gravity: 0.6, lift: -12, velocity: 0 };
-    const trees = [];
-    const treeWidth = 40;
-    const gap = 100;
-    let frameCount = 0;
-    let score = 0;
-    let gameover = false;
+        let countdownTime = 7200; // 2 saat (saniye)
+        let totalTokens = 0;
+        let timer;
 
-    function draw() {
-        ctx.fillStyle = '#4CAF50'; // Yeşil arka plan
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Telegram kullanıcı adını al ve göster
+        telegram.ready();
+        username.innerText = telegram.initDataUnsafe?.user?.first_name || "User";
 
-        // Ağaçları çizin
-        for (let tree of trees) {
-            ctx.drawImage(treeImg, tree.x, tree.y, treeWidth, tree.height);
-            ctx.drawImage(treeImg, tree.x, tree.y + tree.height + gap, treeWidth, canvas.height - (tree.y + tree.height + gap));
+        // Geri sayım işlevi
+        function startCountdown() {
+            if (timer) clearInterval(timer);
+            timer = setInterval(() => {
+                if (countdownTime > 0) {
+                    countdownTime--;
+                    const hours = Math.floor(countdownTime / 3600);
+                    const minutes = Math.floor((countdownTime % 3600) / 60);
+                    const seconds = countdownTime % 60;
+                    timerDisplay.innerText = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                } else {
+                    clearInterval(timer);
+                    timerDisplay.innerText = "Claim Now!";
+                }
+            }, 1000);
         }
 
-        // Kuşu çizin
-        ctx.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
+        // Claim butonuna tıklama
+        claimButton.addEventListener('click', () => {
+            if (countdownTime === 0) {
+                totalTokens += 100; // Kullanıcıya 100 token ekle
+                tokensDisplay.innerText = `Total: ${totalTokens} IUSxp`;
+                countdownTime = 7200; // 2 saatlik geri sayımı başlat
+                startCountdown();
 
-        // Skoru çizin
-        ctx.fillStyle = 'white';
-        ctx.font = '20px Arial';
-        ctx.fillText(`Score: ${score}`, 10, 30);
-    }
-
-    function update() {
-        bird.velocity += bird.gravity;
-        bird.y += bird.velocity;
-
-        // Yere veya tavana çarpma kontrolü
-        if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
-            gameover = true;
-        }
-
-        // Ağaçları hareket ettirin ve çarpışmaları kontrol edin
-        for (let tree of trees) {
-            tree.x -= 2;
-
-            if (tree.x + treeWidth < 0) {
-                trees.shift(); // Ağaç ekran dışına çıktıysa kaldır
-                score++;
+                // Sunucuya kullanıcı verisini gönder
+                fetch('/api/claim', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: telegram.initDataUnsafe?.user?.id,
+                        tokens: totalTokens,
+                        countdownTime: countdownTime,
+                    }),
+                });
             }
+        });
 
-            if (
-                bird.x < tree.x + treeWidth &&
-                bird.x + bird.width > tree.x &&
-                (bird.y < tree.y + tree.height || bird.y + bird.height > tree.y + tree.height + gap)
-            ) {
-                gameover = true;
+        // Kullanıcı giriş yaptığında geri sayımı başlat
+        async function initializeUser() {
+            const response = await fetch(`/api/user/${telegram.initDataUnsafe?.user?.id}`);
+            const data = await response.json();
+            if (data) {
+                totalTokens = data.tokens || 0;
+                countdownTime = data.countdownTime || 7200;
+                tokensDisplay.innerText = `Total: ${totalTokens} IUSxp`;
+                startCountdown();
             }
         }
 
-        // Yeni ağaçlar ekleyin
-        if (frameCount % 150 === 0) {
-            const treeHeight = Math.random() * (canvas.height / 2);
-            trees.push({ x: canvas.width, y: treeHeight, height: treeHeight });
-        }
-
-        frameCount++;
-    }
-
-    function resetGame() {
-        bird.y = 150;
-        bird.velocity = 0;
-        trees.length = 0;
-        score = 0;
-        frameCount = 0;
-        gameover = false;
-    }
-
-    function gameLoop() {
-        if (!gameover) {
-            draw();
-            update();
-            requestAnimationFrame(gameLoop);
-        } else {
-            ctx.fillStyle = 'red';
-            ctx.font = '30px Arial';
-            ctx.fillText('Game Over!', canvas.width / 2 - 70, canvas.height / 2);
-            ctx.fillText(`Final Score: ${score}`, canvas.width / 2 - 80, canvas.height / 2 + 40);
-        }
-    }
-
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' && !gameover) {
-            bird.velocity = bird.lift;
-        } else if (e.code === 'Space' && gameover) {
-            resetGame();
-            gameLoop();
-        }
-    });
-
-    gameLoop();
-</script>
+        initializeUser();
+    </script>
 </body>
 </html>
