@@ -1,30 +1,20 @@
-/* Genel yapı ve temel stiller */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to bottom, black, white); /* Siyah-beyaz ombre */
-    color: white; /* Tüm yazıların beyaz olması */
+ body {
+div {
+    background: linear-gradient(to bottom, #000000 0%, #ffffff 100%);
+}
 }
 
-/* Oyun alanı */
+
+
 #game-container {
     position: relative;
     width: 100vw;
     height: 100vh;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
 }
 
-/* Zaman ve skor */
-#timer, #score {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-/* Başla düğmesi */
 #start-button {
     padding: 20px 40px;
     font-size: 24px;
@@ -33,4 +23,24 @@ body {
     background-color: #4CAF50;
     color: white;
     border-radius: 10px;
+}
+
+.bubble {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-color: grey;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#timer, #score {
+    position: absolute;
+    top: 20px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+#score {
+    top: 60px;
 }
