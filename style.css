@@ -19,7 +19,7 @@ body {
 
 /* Zaman yazısı */
 #timer {
-    font-size: 36px; /* Daha büyük */
+    font-size: 32px; /* Daha büyük */
     font-weight: bold; /* Daha kalın */
     position: absolute;
     top: 20px;
