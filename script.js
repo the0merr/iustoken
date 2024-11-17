@@ -86,15 +86,8 @@ function createBubble() {
     });
 
     gameContainer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 1000); 
+    setTimeout(() => bubble.remove(), 1500);
 }
-// Baloncukların daha sık yenilenmesi için interval süresi azaltıldı
-bubbleInterval = setInterval(() => {
-    createBubble(); // Yeni bir baloncuk oluştur
-    createBubble(); // Aynı anda bir tane daha baloncuk oluştur
-}, 500); // 0.5 saniyede bir yeni baloncuklar eklenir
-
-
 
 // Oyunu bitirme ve soğuma süresini başlatma fonksiyonu
 function endGame() {
