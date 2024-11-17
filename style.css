@@ -34,11 +34,11 @@ body {
 
 /* Başlatma butonu */
 #start-button {
-    padding: 20px 40px;
+    padding: 15px 35px;
     font-size: 24px;
     cursor: pointer;
     border: none;
-    background-color: #4CAF50;
+    background-color: #000000;
     color: white;
     border-radius: 10px;
 }
