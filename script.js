@@ -24,7 +24,7 @@ let bubbleInterval;
 let isCooldownActive = false;
 
 // Toplam puanı ekranda göster
-scoreDisplay.textContent = `Total Score: ${score}`;
+scoreDisplay.textContent = `Total IUSxp: ${score}`;
 
 // Soğuma süresi kontrolü ve başlatma
 function checkCooldown() {
@@ -51,7 +51,7 @@ function startGame() {
     score = parseInt(localStorage.getItem('totalScore')) || 0;
     gameTime = 30;
     startButton.style.display = 'none';
-    scoreDisplay.textContent = `Total Score: ${score}`;
+    scoreDisplay.textContent = `Total IUSxp: ${score}`;
     timerDisplay.textContent = `Time: ${gameTime}`;
 
     // Zamanlayıcıları başlat
@@ -84,7 +84,7 @@ function createBubble() {
 
     bubble.addEventListener('click', () => {
         score++;
-        scoreDisplay.textContent = `Total Score: ${score}`;
+        scoreDisplay.textContent = `Total IUSxp: ${score}`;
         bubble.remove();
     });
 
@@ -135,7 +135,7 @@ function startCooldown(remainingTime) {
 
 // Sayfa yüklendiğinde kontrol yap
 window.onload = () => {
-    scoreDisplay.textContent = `Total Score: ${score}`;
+    scoreDisplay.textContent = `Total IUSxp: ${score}`;
     checkCooldown();
 };
 
