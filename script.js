@@ -2,6 +2,18 @@ const gameContainer = document.getElementById('game-container');
 const startButton = document.getElementById('start-button');
 const timerDisplay = document.getElementById('timer');
 const scoreDisplay = document.getElementById('score');
+const claimButton = document.createElement('button');
+
+// Claim Butonu Ayarları
+claimButton.textContent = "Claim Your Points";
+claimButton.style.display = 'none';
+claimButton.style.marginTop = '20px';
+claimButton.addEventListener('click', () => {
+    alert(`You claimed ${score} tokens!`);
+    claimButton.style.display = 'none'; // Claim ettikten sonra butonu gizle
+});
+
+document.body.appendChild(claimButton);
 
 // Oyun değişkenleri
 let score = parseInt(localStorage.getItem('totalScore')) || 0;
@@ -85,28 +97,31 @@ function endGame() {
     // Toplam puanı kaydet
     localStorage.setItem('totalScore', score);
 
+    // Kullanıcıya oyun bitti mesajı göster ve Claim butonunu aktif et
+    alert(`Oyun Bitti! Toplam Puanınız: ${score}`);
+    claimButton.style.display = 'block';
+
     // Soğuma süresi ayarla
     const cooldownEndTime = Math.floor(Date.now() / 1000) + cooldownTime;
     localStorage.setItem('cooldownEndTime', cooldownEndTime);
-
-    // Kullanıcıya oyun bitti mesajı göster
-    alert(`Oyun Bitti! Toplam Puanınız: ${score}`);
 
     // Soğuma süresini başlat
     startCooldown(cooldownTime);
 }
 
-// Soğuma süresi başlatma fonksiyonu
+// Soğuma süresi başlatma fonksiyonu (saat ve dakika formatında)
 function startCooldown(remainingTime) {
     isCooldownActive = true;
     startButton.style.display = 'none';
-    timerDisplay.textContent = `Cooldown: ${remainingTime} remaining time`;
-
+    
     const cooldownInterval = setInterval(() => {
-        remainingTime--;
-        timerDisplay.textContent = `Cooldown: ${remainingTime} remaining time`;
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} left`;
 
-        if (remainingTime <= 0) {
+        remainingTime--;
+
+        if (remainingTime < 0) {
             clearInterval(cooldownInterval);
             isCooldownActive = false;
             startButton.style.display = 'block';
