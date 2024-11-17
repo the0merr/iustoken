@@ -1,25 +1,30 @@
+/* Genel yapı ve temel stiller */
 body {
     margin: 0;
-    font-family: Arial, sans-serif; /* Daha düzgün bir yazı tipi seçimi */
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, black, white); /* Siyah-beyaz ombre */
+    color: white; /* Tüm yazıların beyaz olması */
 }
 
-div {
-    background: linear-gradient(to bottom, #000000 0%, #ffffff 100%);
-    width: 100vw;
-    height: 100vh;
-}
-
+/* Oyun alanı */
 #game-container {
     position: relative;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     display: flex;
-    flex-direction: column; /* Elemanların alt alta dizilmesi */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center; /* Yazıların ortalanması */
+    text-align: center;
 }
 
+/* Zaman ve skor */
+#timer, #score {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Başla düğmesi */
 #start-button {
     padding: 20px 40px;
     font-size: 24px;
@@ -28,31 +33,4 @@ div {
     background-color: #4CAF50;
     color: white;
     border-radius: 10px;
-    transition: background-color 0.3s ease; /* Hover için geçiş efekti */
-}
-
-#start-button:hover {
-    background-color: #45a049; /* Hover sırasında renk değişimi */
-}
-
-.bubble {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background-color: grey;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-#timer, #score {
-    position: absolute;
-    top: 20px;
-    font-size: 24px;
-    color: #ffffff;
-    font-weight: bold; /* Daha belirgin yazılar için */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Yazıyı arka planda okunabilir yapar */
-}
-
-#score {
-    top: 60px;
 }
