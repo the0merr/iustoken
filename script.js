@@ -9,7 +9,7 @@ claimButton.textContent = "Claim Your Points";
 claimButton.style.display = 'none';
 claimButton.style.marginTop = '20px';
 claimButton.addEventListener('click', () => {
-    alert(You claimed ${score} tokens!);
+    alert(`You claimed ${score} tokens!`);
     claimButton.style.display = 'none'; // Claim ettikten sonra butonu gizle
 });
 
@@ -24,7 +24,7 @@ let bubbleInterval;
 let isCooldownActive = false;
 
 // Toplam puanı ekranda göster
-scoreDisplay.textContent = Total Score: ${score};
+scoreDisplay.textContent = `Total Score: ${score}`;
 
 // Soğuma süresi kontrolü ve başlatma
 function checkCooldown() {
@@ -51,18 +51,18 @@ function startGame() {
     score = parseInt(localStorage.getItem('totalScore')) || 0;
     gameTime = 30;
     startButton.style.display = 'none';
-    scoreDisplay.textContent = Total Score: ${score};
-    timerDisplay.textContent = Time: ${gameTime};
+    scoreDisplay.textContent = `Total Score: ${score}`;
+    timerDisplay.textContent = `Time: ${gameTime}`;
 
     // Zamanlayıcıları başlat
     gameInterval = setInterval(updateTimer, 1000);
-    bubbleInterval = setInterval(createBubble, 1000);
+    bubbleInterval = setInterval(createBubble, 500); // Daha sık baloncuklar
 }
 
 // Zamanlayıcıyı güncelleme fonksiyonu
 function updateTimer() {
     gameTime--;
-    timerDisplay.textContent = Time: ${gameTime};
+    timerDisplay.textContent = `Time: ${gameTime}`;
 
     if (gameTime <= 0) {
         endGame();
@@ -76,17 +76,17 @@ function createBubble() {
 
     const x = Math.random() * (window.innerWidth - 50);
     const y = Math.random() * (window.innerHeight - 50);
-    bubble.style.left = ${x}px;
-    bubble.style.top = ${y}px;
+    bubble.style.left = `${x}px`;
+    bubble.style.top = `${y}px`;
 
     bubble.addEventListener('click', () => {
         score++;
-        scoreDisplay.textContent = Total Score: ${score};
+        scoreDisplay.textContent = `Total Score: ${score}`;
         bubble.remove();
     });
 
     gameContainer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 500);
+    setTimeout(() => bubble.remove(), 1000); // Balonlar daha kısa süre görünür
 }
 
 // Oyunu bitirme ve soğuma süresini başlatma fonksiyonu
@@ -98,7 +98,7 @@ function endGame() {
     localStorage.setItem('totalScore', score);
 
     // Kullanıcıya oyun bitti mesajı göster ve Claim butonunu aktif et
-    alert(Oyun Bitti! Toplam Puanınız: ${score});
+    alert(`Oyun Bitti! Toplam Puanınız: ${score}`);
     claimButton.style.display = 'block';
 
     // Soğuma süresi ayarla
@@ -117,7 +117,7 @@ function startCooldown(remainingTime) {
     const cooldownInterval = setInterval(() => {
         const minutes = Math.floor(remainingTime / 60);
         const seconds = remainingTime % 60;
-        timerDisplay.textContent = ${minutes}:${seconds < 10 ? '0' : ''}${seconds} left;
+        timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds} left`;
 
         remainingTime--;
 
@@ -132,7 +132,7 @@ function startCooldown(remainingTime) {
 
 // Sayfa yüklendiğinde kontrol yap
 window.onload = () => {
-    scoreDisplay.textContent = Total Score: ${score};
+    scoreDisplay.textContent = `Total Score: ${score}`;
     checkCooldown();
 };
 
