@@ -1,18 +1,23 @@
 body {
+    margin: 0;
+    font-family: Arial, sans-serif; /* Daha düzgün bir yazı tipi seçimi */
+}
+
 div {
     background: linear-gradient(to bottom, #000000 0%, #ffffff 100%);
+    width: 100vw;
+    height: 100vh;
 }
-}
-
-
 
 #game-container {
     position: relative;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
+    flex-direction: column; /* Elemanların alt alta dizilmesi */
     justify-content: center;
     align-items: center;
+    text-align: center; /* Yazıların ortalanması */
 }
 
 #start-button {
@@ -23,6 +28,11 @@ div {
     background-color: #4CAF50;
     color: white;
     border-radius: 10px;
+    transition: background-color 0.3s ease; /* Hover için geçiş efekti */
+}
+
+#start-button:hover {
+    background-color: #45a049; /* Hover sırasında renk değişimi */
 }
 
 .bubble {
@@ -39,6 +49,8 @@ div {
     top: 20px;
     font-size: 24px;
     color: #ffffff;
+    font-weight: bold; /* Daha belirgin yazılar için */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* Yazıyı arka planda okunabilir yapar */
 }
 
 #score {
