@@ -1,9 +1,11 @@
- body {
-    background-color: #000000;
+/* Genel stil */
+body {
+    background-color: grey;
+    margin: 0;
+    font-family: Verdana, sans-serif;
 }
 
-
-
+/* Oyun konteyneri */
 #game-container {
     position: relative;
     width: 100vw;
@@ -13,6 +15,7 @@
     align-items: center;
 }
 
+/* Başlatma butonu */
 #start-button {
     padding: 20px 40px;
     font-size: 24px;
@@ -23,6 +26,7 @@
     border-radius: 10px;
 }
 
+/* Baloncuklar */
 .bubble {
     position: absolute;
     width: 50px;
@@ -32,15 +36,14 @@
     cursor: pointer;
 }
 
+/* Sayaç ve Skor */
 #timer, #score {
     position: absolute;
     top: 20px;
     font-size: 24px;
     color: #ffffff;
-    font-family: Verdana, sans-serif;
 }
 
 #score {
     top: 60px;
-    font-family: Verdana, sans-serif;
 }
