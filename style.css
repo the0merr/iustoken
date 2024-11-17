@@ -1,7 +1,5 @@
  body {
-div {
-    background: linear-gradient(to bottom, #000000 0%, #ffffff 100%);
-}
+    background-color: grey;
 }
 
 
