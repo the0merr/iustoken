@@ -86,7 +86,7 @@ function createBubble() {
     });
 
     gameContainer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 1500);
+    setTimeout(() => bubble.remove(), 500);
 }
 
 // Oyunu bitirme ve soğuma süresini başlatma fonksiyonu
