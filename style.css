@@ -1,8 +1,9 @@
 body {
   margin: 0;
-  height: 100vh; /* Tam ekran boyutu */
-  background: linear-gradient(to bottom, #000000, #4d4d4d, #bfbfbf, #ffffff);
+  height: 100vh;
+  background: linear-gradient(to bottom, black, white);
 }
+
 
 
 #game-container {
