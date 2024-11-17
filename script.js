@@ -79,6 +79,9 @@ function createBubble() {
     bubble.style.left = `${x}px`;
     bubble.style.top = `${y}px`;
 
+    bubble.style.backgroundImage = "url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAw0AAAMJCAYAAABBcNr2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAP+lSURBVHhe7L1nc9xInu19UN5X0...')"; // Logonuzun Base64 kodu
+    bubble.style.backgroundSize = "cover";
+
     bubble.addEventListener('click', () => {
         score++;
         scoreDisplay.textContent = `Total Score: ${score}`;
