@@ -86,7 +86,7 @@ function createBubble() {
     });
 
     gameContainer.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 1000); // Balonlar daha kısa süre görünür
+    setTimeout(() => bubble.remove(), 1500); // Balonlar daha kısa süre görünür
 }
 
 // Oyunu bitirme ve soğuma süresini başlatma fonksiyonu
