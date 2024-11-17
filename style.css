@@ -1,7 +1,10 @@
 body {
   margin: 0;
   height: 100vh;
-  background: linear-gradient(to bottom, black, white);
+  background: -webkit-linear-gradient(black, white); /* Chrome ve Safari */
+  background: -moz-linear-gradient(black, white); /* Firefox */
+  background: -o-linear-gradient(black, white); /* Opera */
+  background: linear-gradient(to bottom, black, white); /* Modern tarayıcılar */
 }
 
 
