@@ -19,7 +19,7 @@ body {
 
 /* Zaman yazısı */
 #timer {
-    font-size: 32px; /* Daha büyük */
+    font-size: 36px; /* Daha büyük */
     font-weight: bold; /* Daha kalın */
     position: absolute;
     top: 20px;
@@ -34,11 +34,11 @@ body {
 
 /* Başlatma butonu */
 #start-button {
-    padding: 15px 35px;
+    padding: 20px 40px;
     font-size: 24px;
     cursor: pointer;
     border: none;
-    background-color: #000000;
+    background-color: #4CAF50;
     color: white;
     border-radius: 10px;
 }
