@@ -3,6 +3,7 @@ body {
     background-color: white;
     margin: 0;
     font-family: Verdana, sans-serif;
+    color: black;
 }
 
 /* Oyun konteyneri */
@@ -11,8 +12,24 @@ body {
     width: 100vw;
     height: 100vh;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+/* Zaman yazısı */
+#timer {
+    font-size: 36px; /* Daha büyük */
+    font-weight: bold; /* Daha kalın */
+    position: absolute;
+    top: 20px;
+}
+
+/* Skor yazısı */
+#score {
+    font-size: 24px; /* Daha küçük */
+    position: absolute;
+    top: 80px;
 }
 
 /* Başlatma butonu */
@@ -34,16 +51,4 @@ body {
     background-color: grey;
     border-radius: 50%;
     cursor: pointer;
-}
-
-/* Sayaç ve Skor */
-#timer, #score {
-    position: absolute;
-    top: 20px;
-    font-size: 24px;
-    color: #ffffff;
-}
-
-#score {
-    top: 60px;
 }
