@@ -1,74 +1,53 @@
+/* Genel stil */
 body {
-    background-color: #000000;
-    color: white;
-    font-family: 'Arial', sans-serif;
     margin: 0;
-    padding: 0;
-}
-
-.app-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    padding: 20px;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    margin-top: 50px;
-}
-
-.user-avatar {
-    width: 60px;
-    height: 60px;
-    background-color: #202020;
-    border-radius: 50%;
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
+    height: 100vh;
 }
 
-.user-details {
-    margin-left: 15px;
+/* Uygulama konteyneri */
+#app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px;
+    padding: 20px;
+    border: 1px solid #444;
+    border-radius: 10px;
+    background-color: #111;
+}
+
+/* Kullanıcı bilgisi */
+.user-info {
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 #username {
     font-size: 24px;
-    margin: 0;
+    font-weight: bold;
 }
 
 #user-points {
     font-size: 18px;
-    color: #aaa;
-    margin: 0;
+    margin-top: 10px;
 }
 
-.mining-section {
-    margin: 20px 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
+/* Claim butonu */
 .claim-button {
-    padding: 15px 30px;
+    padding: 10px 20px;
     font-size: 16px;
-    background-color: #4caf50;
-    color: white;
+    color: #fff;
+    background-color: #28a745;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    width: 80%;
-    max-width: 300px;
-    position: fixed;
-    bottom: 20px;
+    margin-top: 20px;
 }
 
 .claim-button:disabled {
@@ -76,11 +55,10 @@ body {
     cursor: not-allowed;
 }
 
+/* Cooldown bilgisi */
 .cooldown-info {
-    margin-top: 20px;
-    font-size: 16px;
-    color: #aaa;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #ccc;
     text-align: center;
-    position: fixed;
-    bottom: 70px;
 }
