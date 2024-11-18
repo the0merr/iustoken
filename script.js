@@ -1,65 +1,51 @@
-const tg = window.Telegram.WebApp;
+document.addEventListener("DOMContentLoaded", () => {
+    const usernameElement = document.getElementById("username");
+    const userPointsElement = document.getElementById("user-points");
+    const claimButton = document.getElementById("claim-button");
+    const miningTimerElement = document.getElementById("mining-timer");
 
-// Kullanıcı verilerini Telegram'dan al
-tg.ready(() => {
-  const user = tg.initDataUnsafe.user;
+    // Kullanıcı bilgilerini Telegram Web App'den al
+    const tg = window.Telegram.WebApp;
+    const username = tg.initDataUnsafe.user?.username || "twManage";
+    usernameElement.textContent = username;
 
-  // Kullanıcı bilgilerini sayfada göster
-  document.getElementById("username").textContent = user.username || "Unknown";
-  document.getElementById("user-photo").src = user.photo_url || "default-avatar.png";
+    // Başlangıç değerleri
+    let userPoints = 22196;
+    let miningReward = 100;
+    let miningInterval = 8 * 60 * 60 * 1000; // 8 saat
 
-  // Token bilgilerini backend'den çek
-  fetch(`/api/user-data?user_id=${user.id}`)
-    .then((response) => response.json())
-    .then((data) => {
-      document.getElementById("total-tokens").textContent = `₿ ${data.total_tokens}`;
-      initClaimButton(data);
-    });
-});
+    // Kullanıcı puanlarını güncelle
+    userPointsElement.textContent = `฿ ${userPoints.toLocaleString()}`;
 
-// Claim butonu işlemleri
-function initClaimButton(data) {
-  const claimButton = document.getElementById("claim-button");
-  const countdownTimer = document.getElementById("countdown-timer");
-
-  if (data.is_farming) {
-    // Geri sayımı başlat
-    startCountdown(data.remaining_time);
-  } else {
-    // Claim yapılabilir
-    claimButton.disabled = false;
+    // Claim butonu işlevselliği
     claimButton.addEventListener("click", () => {
-      fetch(`/api/claim`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: tg.initDataUnsafe.user.id }),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          document.getElementById("total-tokens").textContent = `₿ ${result.total_tokens}`;
-          startCountdown(8 * 60 * 60); // 8 saatlik kazım başlat
-        });
+        userPoints += miningReward;
+        userPointsElement.textContent = `฿ ${userPoints.toLocaleString()}`;
+        claimButton.disabled = true; // Claim yapıldıktan sonra butonu devre dışı bırak
+        startMiningCooldown(); // Yeni mining süresini başlat
     });
-  }
-}
 
-// Geri sayımı başlat
-function startCountdown(seconds) {
-  const countdownTimer = document.getElementById("countdown-timer");
-  countdownTimer.style.display = "block";
-  let timeLeft = seconds;
+    // Mining cooldown başlat
+    function startMiningCooldown() {
+        const startTime = Date.now();
+        const endTime = startTime + miningInterval;
 
-  const interval = setInterval(() => {
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      countdownTimer.style.display = "none";
-      document.getElementById("claim-button").disabled = false;
-    } else {
-      timeLeft--;
-      const hours = Math.floor(timeLeft / 3600);
-      const minutes = Math.floor((timeLeft % 3600) / 60);
-      const seconds = timeLeft % 60;
-      countdownTimer.textContent = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        const timerInterval = setInterval(() => {
+            const remainingTime = endTime - Date.now();
+
+            if (remainingTime <= 0) {
+                clearInterval(timerInterval);
+                claimButton.disabled = false; // Cooldown bittiğinde butonu aktif et
+                miningTimerElement.textContent = "Mining complete! Claim your reward.";
+            } else {
+                const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                miningTimerElement.textContent = `Mining in progress: ฿ 0.017 (${hours}:${minutes}:${seconds})`;
+            }
+        }, 1000);
     }
-  }, 1000);
-}
+
+    // İlk başlatma
+    startMiningCooldown();
+});
