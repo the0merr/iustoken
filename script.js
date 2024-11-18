@@ -10,28 +10,43 @@ document.addEventListener("DOMContentLoaded", () => {
     usernameElement.textContent = username;
 
     // Başlangıç değerleri
-    let userPoints = 0;
-    let miningReward = 100;
-    let miningInterval = 8 * 60 * 60 * 1000; // 8 saat
+    let userPoints = 0; // Başlangıç puanı
+    let miningReward = 100; // Mining ödülü
+    let miningCooldown = 8 * 60 * 60 * 1000; // 8 saatlik süre (milisaniye)
+    let cooldownEndTime = null; // Soğuma süresi bitiş zamanı
 
-    // Kullanıcı puanlarını güncelle
-    userPointsElement.textContent = `฿ ${userPoints}`;
+    // Claim butonunu ve zamanlayıcıyı sıfırla
+    function resetClaimButton() {
+        claimButton.disabled = false;
+        claimButton.textContent = `Claim ฿ ${miningReward}`;
+        miningTimerElement.textContent = "Mining complete! Claim your reward.";
+    }
 
-    // Mining cooldown başlat
-    function startMiningCooldown() {
-        const startTime = Date.now();
-        const endTime = startTime + miningInterval;
+    // Claim butonuna tıklama işlemi
+    claimButton.addEventListener("click", () => {
+        if (cooldownEndTime && Date.now() < cooldownEndTime) {
+            alert("Mining devam ediyor! Claim yapabilmek için bekleyin.");
+            return;
+        }
 
+        // Puanı artır ve güncelle
+        userPoints += miningReward;
+        userPointsElement.textContent = `฿ ${userPoints}`;
         claimButton.disabled = true;
+        claimButton.textContent = "Mining in progress...";
+        startMiningCooldown();
+    });
+
+    // Mining cooldown işlemini başlat
+    function startMiningCooldown() {
+        cooldownEndTime = Date.now() + miningCooldown;
 
         const timerInterval = setInterval(() => {
-            const remainingTime = endTime - Date.now();
+            const remainingTime = cooldownEndTime - Date.now();
 
             if (remainingTime <= 0) {
                 clearInterval(timerInterval);
-                claimButton.disabled = false;
-                claimButton.textContent = `Claim ฿ ${miningReward}`;
-                miningTimerElement.textContent = "Mining complete! Claim your reward.";
+                resetClaimButton();
             } else {
                 const hours = Math.floor(remainingTime / (1000 * 60 * 60));
                 const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
@@ -41,15 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
-    // Claim butonu işlevselliği
-    claimButton.addEventListener("click", () => {
-        userPoints += miningReward;
-        userPointsElement.textContent = `฿ ${userPoints}`;
-        claimButton.disabled = true;
-        claimButton.textContent = "Claim ฿ 0";
+    // İlk başlatma: Claim butonu soğuma süresiyle devreye girsin
+    if (!cooldownEndTime || Date.now() >= cooldownEndTime) {
+        resetClaimButton();
+    } else {
         startMiningCooldown();
-    });
-
-    // İlk başlatma
-    startMiningCooldown();
+    }
 });
