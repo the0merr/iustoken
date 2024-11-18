@@ -1,34 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Token Mining App</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mining App</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Profil Alanı -->
-    <div class="profile">
-      <div class="profile-icon">
-        <img id="user-photo" alt="User Photo" />
-      </div>
+    <div class="app-container">
+        <div class="community-header">
+            <span class="community-title">DOGS Community</span>
+            <span class="community-points">20,754,859,791 BP</span>
+            <button class="open-button">Open</button>
+        </div>
+        <div class="user-info">
+            <div class="user-avatar">T</div>
+            <div class="user-details">
+                <h2 id="username">twManage</h2>
+                <p id="user-points">฿ 22,196</p>
+            </div>
+        </div>
+        <div class="mining-section">
+            <button id="claim-button" class="claim-button">Claim ฿ 63.360</button>
+        </div>
+        <div class="cooldown-info">
+            <span id="mining-timer">Mining in progress: ฿ 0.017 (07:59:00)</span>
+        </div>
     </div>
-
-    <!-- Kullanıcı Adı -->
-    <div id="username" class="username">Loading...</div>
-
-    <!-- Toplam Token -->
-    <div id="total-tokens" class="tokens">₿ 0</div>
-
-    <!-- Claim Butonu -->
-    <button id="claim-button" class="claim-button" disabled>Claim ₿ 100</button>
-
-    <!-- Countdown Timer -->
-    <div id="countdown-timer" class="countdown" style="display: none;">08:00:00</div>
-  </div>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
