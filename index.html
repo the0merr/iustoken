@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
+    <div id="app-container">
         <div class="user-info">
-            <div class="user-avatar">T</div>
-            <div class="user-details">
-                <h2 id="username">unknown</h2>
-                <p id="user-points">฿ 0</p>
+            <div id="username-container">
+                <span id="username">unknown</span>
+            </div>
+            <div id="user-points">
+                ฿ 0
             </div>
         </div>
         <div class="mining-section">
             <button id="claim-button" class="claim-button" disabled>Claim ฿ 0</button>
         </div>
-        <div class="cooldown-info">
-            <span id="mining-timer">Next mining available in: 08:00:00</span>
+        <div id="mining-timer" class="cooldown-info">
+            Mining timer not started
         </div>
     </div>
     <script src="script.js"></script>
