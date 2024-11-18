@@ -10,43 +10,15 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
-}
-
-.community-header {
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background-color: #202020;
-    padding: 10px 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.community-title {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.community-points {
-    font-size: 14px;
-    color: #aaa;
-}
-
-.open-button {
-    background-color: #00bcd4;
-    border: none;
-    color: black;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+    height: 100vh;
+    padding: 20px;
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-top: 50px;
 }
 
 .user-avatar {
@@ -59,6 +31,7 @@ body {
     align-items: center;
     font-size: 24px;
     font-weight: bold;
+    color: white;
 }
 
 .user-details {
@@ -78,20 +51,36 @@ body {
 
 .mining-section {
     margin: 20px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .claim-button {
-    padding: 10px 20px;
+    padding: 15px 30px;
     font-size: 16px;
     background-color: #4caf50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    width: 80%;
+    max-width: 300px;
+    position: fixed;
+    bottom: 20px;
+}
+
+.claim-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
 }
 
 .cooldown-info {
     margin-top: 20px;
-    font-size: 14px;
+    font-size: 16px;
     color: #aaa;
+    text-align: center;
+    position: fixed;
+    bottom: 70px;
 }
